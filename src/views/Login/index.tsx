@@ -1,0 +1,60 @@
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
+import styles from './styles';
+
+const LoginScreen: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = () => {
+    if (!email || !password) {
+      Alert.alert('Błąd', 'Wypełnij wszystkie pola');
+      return;
+    }
+    
+    Alert.alert('Sukces', `Logowanie jako: ${email}`);
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>🎣 Fishing App</Text>
+      <Text style={styles.subtitle}>Zaloguj się</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Hasło"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
+
+      <TouchableOpacity 
+        style={styles.button} 
+        onPress={handleLogin}
+      >
+        <Text style={styles.buttonText}>Zaloguj</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity>
+        <Text style={styles.link}>Nie masz konta? Zarejestruj się</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+export default LoginScreen;
