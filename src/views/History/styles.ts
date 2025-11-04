@@ -1,7 +1,6 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-  // --- tu wcześniejsze style z twojego projektu ---
   container: {
     flex: 1,
     backgroundColor: '#f5f7fa',
