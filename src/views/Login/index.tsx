@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
-import styles from './styles';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { useAuth } from '../../types/AuthContext';
+import { styles } from './styles';
 
-const LoginScreen: React.FC = () => {
+export default function LoginScreen() {
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -17,8 +13,11 @@ const LoginScreen: React.FC = () => {
       Alert.alert('Błąd', 'Wypełnij wszystkie pola');
       return;
     }
-    
-    Alert.alert('Sukces', `Logowanie jako: ${email}`);
+    try {
+      login(email, password);
+    } catch (error) {
+      Alert.alert('Błąd logowania', 'Nieprawidłowy login lub hasło');
+    }
   };
 
   return (
@@ -55,6 +54,5 @@ const LoginScreen: React.FC = () => {
       </TouchableOpacity>
     </View>
   );
-};
+}
 
-export default LoginScreen;
