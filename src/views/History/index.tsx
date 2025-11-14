@@ -1,4 +1,7 @@
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { HistoryStackParamList } from '../../types/navigation';
 import {
   View,
   Text,
@@ -25,6 +28,10 @@ interface Dane {
 }
 
 export default function History() {
+  
+  type HistoryScreenNavigationProp = NativeStackNavigationProp<HistoryStackParamList, 'HistoryList'>;
+  const navigation = useNavigation<HistoryScreenNavigationProp>();
+
   const historiaPolowow: Dane[] = [
     {
       id: '1',
@@ -69,7 +76,7 @@ export default function History() {
 
   const handleSelectTrip = (id: string) => {
     console.log('Otwórz szczegóły wyprawy:', id);
-    // navigation.navigate('TripDetail', { tripId: id })
+    navigation.navigate('FishingDetail', { fishingID: id });
   };
 
   const renderItem = ({ item }: { item: Dane }) => (

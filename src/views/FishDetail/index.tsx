@@ -9,6 +9,9 @@ import {
   StatusBar,
 } from 'react-native';
 import { styles } from './styles';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { HistoryStackParamList } from '../../types/navigation';
 
 // Typ dla danych ryby
 export interface Fish {
@@ -27,6 +30,10 @@ export interface Fish {
 }
 
 export default function FishDetail() {
+
+    type HistoryScreenNavigationProp = NativeStackNavigationProp<HistoryStackParamList, 'FishingDetail'>;
+    const navigation = useNavigation<HistoryScreenNavigationProp>();
+     
   // Przykładowe dane ryby
   const ryba: Fish = {
     id: '1',
@@ -45,7 +52,7 @@ export default function FishDetail() {
 
   const handleGoBack = () => {
     console.log('Powrót do listy');
-    // Tutaj będzie navigation.goBack()
+    navigation.goBack()
   };
 
   const handleEdit = () => {

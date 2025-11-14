@@ -7,17 +7,35 @@ import { TouchableOpacity, StyleSheet, View } from 'react-native';
 import AuthProvider, { useAuth } from './src/types/AuthContext';
 import LoginScreen from './src/views/Login';
 import DashboardScreen from './src/views/Dashboard';
+import HistoryScreen  from './src/views/History';
+import FishingDetailScreen from './src/views/FishingDetail';
+import SpotsScreen from './src/views/FishingSpots';
+import ProfileScreen from './src/views/Profile';
+import AddFishingScreen from './src/views/NewFishing';
 
-import type { 
-  RootStackParamList, 
-  AuthStackParamList, 
-  MainTabsParamList 
+
+import type {
+  RootStackParamList,
+  AuthStackParamList,
+  MainTabsParamList,
+  HistoryStackParamList,
 } from './src/types/navigation';
+import NewFishing from './src/views/NewFishing';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
+const HistoryStack = createNativeStackNavigator<HistoryStackParamList>();
+
 const Tab = createBottomTabNavigator<MainTabsParamList>();
 
+function HistoryNavigator() {
+  return (
+    <HistoryStack.Navigator screenOptions={{ headerShown: false }}>
+      <HistoryStack.Screen name="HistoryList" component={HistoryScreen} />
+      <HistoryStack.Screen name="FishingDetail" component={FishingDetailScreen} />
+    </HistoryStack.Navigator>
+  );
+}
 function AuthNavigator() {
   return (
     <AuthStack.Navigator screenOptions={{ headerShown: false }}>
@@ -26,7 +44,7 @@ function AuthNavigator() {
   );
 }
 
-const EmptyComponent = () => null;
+//const EmptyComponent = () => null;
 
 const CustomFAB = ({ onPress }: any) => (
   <View style={styles.fabContainer}>
@@ -90,11 +108,11 @@ function MainTabs() {
 
       <Tab.Screen
         name="HistoryTab"
-        component={EmptyComponent}
+        component={HistoryNavigator}
         options={{ tabBarLabel: 'Połowy' }}
         listeners={{
           tabPress: (e) => {
-            e.preventDefault(); // blokuje nawigację
+          //  e.preventDefault(); // blokuje nawigację
             console.log('Kliknięto: Połowy');
           },
         }}
@@ -102,14 +120,14 @@ function MainTabs() {
 
       <Tab.Screen
         name="AddFishing"
-        component={EmptyComponent}
+        component={NewFishing}
         options={{
           tabBarLabel: '',
           tabBarButton: (props) => <CustomFAB {...props} />,
         }}
         listeners={{
           tabPress: (e) => {
-            e.preventDefault(); // blokuje nawigację
+            //e.preventDefault(); // blokuje nawigację
             console.log('Kliknięto Dodaj');
           },
         }}
@@ -117,11 +135,11 @@ function MainTabs() {
 
       <Tab.Screen
         name="SpotsTab"
-        component={EmptyComponent}
+        component={SpotsScreen}
         options={{ tabBarLabel: 'Łowiska' }}
         listeners={{
           tabPress: (e) => {
-            e.preventDefault(); // blokuje nawigację
+          //  e.preventDefault(); // blokuje nawigację
             console.log('🗺️ KlikniętoŁowiska');
           },
         }}
@@ -129,11 +147,11 @@ function MainTabs() {
 
       <Tab.Screen
         name="ProfileTab"
-        component={EmptyComponent}
+        component={ProfileScreen}
         options={{ tabBarLabel: 'Profil' }}
         listeners={{
           tabPress: (e) => {
-            e.preventDefault(); // blokuje nawigację
+           // e.preventDefault(); // blokuje nawigację
             console.log('Kliknięto Profil');
           },
         }}

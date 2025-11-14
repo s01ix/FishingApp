@@ -22,6 +22,7 @@ export type DashboardStackParamList = {
 
 export type HistoryStackParamList = {
   HistoryList: undefined;
+  FishingDetail: { fishingID: string };
 };
 
 export type SpotsStackParamList = {

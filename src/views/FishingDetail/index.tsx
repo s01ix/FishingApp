@@ -12,7 +12,9 @@ import {
   Alert,
 } from 'react-native';
 import { styles } from './styles';
-
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { HistoryStackParamList } from '../../types/navigation'; 
 // Typy danych
 interface FishingSpot {
   id: string;
@@ -47,6 +49,10 @@ interface FishingSession {
 }
 
 export default function FishingDetail() {
+  
+  type FishingDetailNavigationProp = NativeStackNavigationProp<HistoryStackParamList, 'FishingDetail'>;
+  const navigation = useNavigation<FishingDetailNavigationProp>();
+
   // Przykładowe dane połowu
   const [polowData] = useState<FishingSession>({
     id: '#12345',
@@ -99,7 +105,7 @@ export default function FishingDetail() {
 
   const handleGoBack = () => {
     console.log('Powrót do listy');
-    // navigation.goBack()
+    navigation.goBack();
   };
 
   const handleEdit = () => {
