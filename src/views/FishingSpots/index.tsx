@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigation } from "@react-navigation/native";
 import {
   Text,
   View,
@@ -11,6 +12,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { styles } from './styles';
+
 
 // Typ dla łowiska
 export interface FishingSpot {
@@ -59,14 +61,19 @@ export default function FishingSpots() {
     },
   ];
 
+const navigation = useNavigation();
+
+
+
+
   const handleGoBack = () => {
     console.log('Powrót do menu głównego');
-    // Tutaj będzie navigation.goBack()
+    navigation.goBack()
   };
 
   const handleAddNew = () => {
     console.log('Dodawanie nowego łowiska');
-    // Tutaj będzie navigation.navigate('AddFishingSpot')
+    //navigation.navigate('AddFishingSpot')
   };
 
   const handleSpotPress = (spot: FishingSpot) => {

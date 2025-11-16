@@ -11,6 +11,7 @@ import {
   FlatList,
 } from 'react-native';
 import { styles } from './styles';
+import { useNavigation } from "@react-navigation/native";
 
 // Import typów z innych ekranów
 interface FishingSpot {
@@ -70,20 +71,23 @@ export default function NewFishing() {
     });
   };
 
-  const handleGoBack = () => {
-    if (caughtFishes.length > 0) {
-      Alert.alert(
-        'Czy na pewno?',
-        'Masz niezapisane dane. Czy chcesz wyjść?',
-        [
-          { text: 'Anuluj', style: 'cancel' },
-          { text: 'Wyjdź', onPress: () => console.log('Powrót'), style: 'destructive' },
-        ]
-      );
-    } else {
-      console.log('Powrót');
-    }
-  };
+const navigation = useNavigation();
+
+const handleGoBack = () => {
+  if (caughtFishes.length > 0) {
+    Alert.alert(
+      'Czy na pewno?',
+      'Masz niezapisane dane. Czy chcesz wyjść?',
+      [
+        { text: 'Anuluj', style: 'cancel' },
+        { text: 'Wyjdź', onPress: () => navigation.goBack(), style: 'destructive' },
+      ]
+    );
+  } else {
+    navigation.goBack();
+  }
+};
+
 
   const handleSave = () => {
     if (!selectedSpot) {
