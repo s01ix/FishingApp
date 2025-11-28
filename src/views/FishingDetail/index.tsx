@@ -133,7 +133,7 @@ export default function FishingDetail() {
 
   const handleFishPress = (fishId: string) => {
     console.log('Szczegóły ryby:', fishId);
-    // navigation.navigate('FishDetail', { fishId })
+    navigation.navigate('FishDetail', { fishID: fishId })
   };
 
   const openMaps = (latitude: number, longitude: number, label: string): void => {

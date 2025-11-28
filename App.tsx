@@ -11,6 +11,7 @@ import HistoryScreen  from './src/views/History';
 import FishingDetailScreen from './src/views/FishingDetail';
 import SpotsScreen from './src/views/FishingSpots';
 import ProfileScreen from './src/views/Profile';
+import FishDetailScreen from './src/views/FishDetail';
 import AddFishingScreen from './src/views/NewFishing';
 
 
@@ -33,6 +34,7 @@ function HistoryNavigator() {
     <HistoryStack.Navigator screenOptions={{ headerShown: false }}>
       <HistoryStack.Screen name="HistoryList" component={HistoryScreen} />
       <HistoryStack.Screen name="FishingDetail" component={FishingDetailScreen} />
+      <HistoryStack.Screen name= "FishDetail" component={FishDetailScreen}/>
     </HistoryStack.Navigator>
   );
 }

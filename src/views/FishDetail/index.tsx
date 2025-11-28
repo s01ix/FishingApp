@@ -9,8 +9,9 @@ import {
   StatusBar,
 } from 'react-native';
 import { styles } from './styles';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native'; // ZMIANA: dodaj useRoute
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RouteProp } from '@react-navigation/native'; // ZMIANA: dodaj import RouteProp
 import type { HistoryStackParamList } from '../../types/navigation';
 
 // Typ dla danych ryby
@@ -31,10 +32,13 @@ export interface Fish {
 
 export default function FishDetail() {
 
-    type HistoryScreenNavigationProp = NativeStackNavigationProp<HistoryStackParamList, 'FishingDetail'>;
-    const navigation = useNavigation<HistoryScreenNavigationProp>();
-     
-  // Przykładowe dane ryby
+    type FishDetailNavigationProp = NativeStackNavigationProp<HistoryStackParamList, 'FishDetail'>;
+    type FishDetailRouteProp = RouteProp<HistoryStackParamList, 'FishDetail'>;
+    
+    const navigation = useNavigation<FishDetailNavigationProp>(); 
+    const route = useRoute<FishDetailRouteProp>();
+    const { fishID } = route.params;
+
   const ryba: Fish = {
     id: '1',
     zdjecie: 'https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=800',
