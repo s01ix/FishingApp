@@ -8,10 +8,13 @@ import {
   StatusBar,
   Alert,
   Modal,
+  Platform,
+  TextInput,
   FlatList,
 } from 'react-native';
 import { styles } from './styles';
 import { useNavigation } from "@react-navigation/native";
+import { useAuth } from '../../types/AuthContext';
 
 // Import typów z innych ekranów
 interface FishingSpot {
@@ -32,10 +35,58 @@ interface CaughtFish {
 }
 
 export default function NewFishing() {
+  const { user } = useAuth();
+
+  const API_URL = Platform.select({
+    android: 'http://10.161.77.16:3000',
+    ios: 'http://localhost:3000',
+    default: 'http://localhost:3000',
+  });
+
   const [currentDate] = useState(new Date());
   const [selectedSpot, setSelectedSpot] = useState<FishingSpot | null>(null);
   const [caughtFishes, setCaughtFishes] = useState<CaughtFish[]>([]);
   const [showSpotPicker, setShowSpotPicker] = useState(false);
+
+  //stany dla modala dodawania ryby
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [tempSpecies, setTempSpecies] = useState('');
+  const [tempWeight, setTempWeight] = useState('');
+  const [tempLength, setTempLength] = useState('');
+  const [tempBait, setTempBait] = useState('');
+//funkcje dla modala dodawania ryby
+const openAddFishModal = () => {
+    // Czyścimy pola przed otwarciem
+    setTempSpecies('');
+    setTempWeight('');
+    setTempLength('');
+    setTempBait('');
+    setModalVisible(true);
+  };
+// Zapisz rybę z modala
+const saveFishFromModal = () => {
+    if (!tempSpecies || !tempWeight) {
+      Alert.alert("Błąd", "Podaj przynajmniej gatunek i wagę ryby.");
+      return;
+    }
+    // Tworzenie obiektu ryby
+    const newFish: CaughtFish = {
+      id: Date.now().toString(),
+      gatunek: tempSpecies,
+      nazwa: tempSpecies,
+      waga: parseFloat(tempWeight.replace(',', '.')), 
+      dlugosc: parseFloat(tempLength.replace(',', '.')) || 0,
+      godzina: new Date().toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
+      przyneta: tempBait || 'Brak',
+      notatki: ''
+    };
+
+    // Dodanie do listy
+    setCaughtFishes([...caughtFishes, newFish]);
+    
+    // Zamknięcie modala
+    setModalVisible(false);
+  };
 
   // Przykładowe łowiska
   const availableSpots: FishingSpot[] = [
@@ -89,7 +140,7 @@ const handleGoBack = () => {
 };
 
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!selectedSpot) {
       Alert.alert('Błąd', 'Wybierz łowisko');
       return;
@@ -100,34 +151,46 @@ const handleGoBack = () => {
       return;
     }
 
-    console.log('Zapisywanie połowu:', {
-      data: formatDate(currentDate),
-      godzina: formatTime(currentDate),
-      lowisko: selectedSpot,
-      ryby: caughtFishes,
-    });
-
-    Alert.alert('Sukces', 'Połów został zapisany!', [
-      { text: 'OK', onPress: () => console.log('Powrót do głównego ekranu') },
-    ]);
-  };
-
-  const handleAddFish = () => {
-    console.log('Nawigacja do ekranu dodawania ryby');
-    // Tutaj będzie navigation.navigate('AddFish', { onFishAdded: addFishToList })
+    if (!user) {
+      Alert.alert('Błąd', 'Nie jesteś zalogowany');
+      return;
+    }
     
-    // Symulacja dodania ryby (do testów)
-    const newFish: CaughtFish = {
-      id: Date.now().toString(),
-      gatunek: 'Karp',
-      nazwa: 'Karpik',
-      waga: 3.5,
-      dlugosc: 55,
-      godzina: formatTime(new Date()),
-      przyneta: 'Kukurydza',
-      notatki: 'Dobre miejsce przy trzcinach',
+    const newTrip = {
+      userId: user.id,           
+      date: formatDate(currentDate),
+      startTime: formatTime(currentDate),
+      spotId: selectedSpot.id,   
+      spotName: selectedSpot.nazwa,
+      spotLocation: selectedSpot.lokalizacja,
+      catches: caughtFishes 
     };
-    setCaughtFishes([...caughtFishes, newFish]);
+
+    try {
+      //Wysłanie zapytania do serwera
+      const response = await fetch(`${API_URL}/trips`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newTrip),
+      });
+
+      if (response.ok) {
+        //udało się zapisać
+        Alert.alert('Sukces', 'Połów został zapisany w bazie!', [
+          { 
+            text: 'OK', 
+            onPress: () => navigation.goBack() 
+          },
+        ]);
+      } else {
+        throw new Error('Serwer zwrócił błąd');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Błąd', 'Nie udało się połączyć z serwerem json-server.');
+    }
   };
 
   const handleRemoveFish = (fishId: string) => {
@@ -275,7 +338,7 @@ const handleGoBack = () => {
             </View>
           )}
 
-          <TouchableOpacity style={styles.addFishButton} onPress={handleAddFish}>
+          <TouchableOpacity style={styles.addFishButton} onPress={openAddFishModal}>
             <Text style={styles.addFishIcon}>+</Text>
             <Text style={styles.addFishText}>Dodaj rybę</Text>
           </TouchableOpacity>
@@ -353,6 +416,62 @@ const handleGoBack = () => {
             >
               <Text style={styles.addNewSpotText}>+ Dodaj nowe łowisko</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      {/* Modal dodawania ryby */}
+      <Modal visible={isModalVisible} animationType="fade" transparent>
+        <View style={styles.centeredModalOverlay}>
+          <View style={styles.fishModalContainer}>
+            <Text style={styles.fishModalTitle}>Dodaj Rybę</Text>
+
+            <Text style={styles.inputLabel}>Gatunek *</Text>
+            <TextInput 
+              style={styles.input} 
+              placeholder="np. Karp, Szczupak" 
+              value={tempSpecies}
+              onChangeText={setTempSpecies}
+            />
+
+            <View style={styles.inputRow}>
+              <View style={{ flex: 1, marginRight: 10 }}>
+                <Text style={styles.inputLabel}>Waga (kg) *</Text>
+                <TextInput 
+                  style={styles.input} 
+                  placeholder="0.0" 
+                  keyboardType="numeric"
+                  value={tempWeight}
+                  onChangeText={setTempWeight}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.inputLabel}>Długość (cm)</Text>
+                <TextInput 
+                  style={styles.input} 
+                  placeholder="0" 
+                  keyboardType="numeric"
+                  value={tempLength}
+                  onChangeText={setTempLength}
+                />
+              </View>
+            </View>
+
+            <Text style={styles.inputLabel}>Przynęta</Text>
+            <TextInput 
+              style={styles.input} 
+              placeholder="np. Kukurydza" 
+              value={tempBait}
+              onChangeText={setTempBait}
+            />
+
+            <View style={styles.modalBtnRow}>
+              <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalBtnCancel}>
+                <Text style={styles.btnTextBlack}>Anuluj</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={saveFishFromModal} style={styles.modalBtnAdd}>
+                <Text style={styles.btnTextWhite}>Dodaj</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>

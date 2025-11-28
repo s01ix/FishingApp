@@ -63,9 +63,6 @@ export default function FishingSpots() {
 
 const navigation = useNavigation();
 
-
-
-
   const handleGoBack = () => {
     console.log('Powrót do menu głównego');
     navigation.goBack()

@@ -9,15 +9,19 @@ import {
   StatusBar,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useAuth } from '../../types/AuthContext';
 
 // Typ użytkownika
 type UserProfile = {
-  firstName: string;
-  lastName: string;
-  login: string;
+  firstName?: string;
+  lastName?: string;
+  username?: string;
+  email?: string;
+  favoriteFish?: string;
+  bio?: string;
   stats?: {
-    trips: number;
-    fishCaught: number;
+    trips?: number;
+    fishCaught?: number;
     biggestCatchKg?: number;
   };
 };
@@ -25,17 +29,11 @@ type UserProfile = {
 // 🔹 Avatarka lokalna
 const localAvatar = require("../../../assets/avatar.png");
 
-const defaultUser: UserProfile = {
-  firstName: "Jan",
-  lastName: "Kowalski",
-  login: "@janek",
-  stats: { trips: 27, fishCaught: 134, biggestCatchKg: 4.2 },
-};
-
-export default function ProfileScreen({ user = defaultUser }: { user?: UserProfile }) {
+export default function ProfileScreen() {
+  const { user } = useAuth();
   const navigation = useNavigation();
 
-  const s = user.stats ?? { trips: 0, fishCaught: 0 };
+  const s = (user && (user.stats as any)) ?? { trips: 0, fishCaught: 0 };
 
   const handleGoBack = () => navigation.goBack();
 
@@ -60,15 +58,18 @@ export default function ProfileScreen({ user = defaultUser }: { user?: UserProfi
           <Image source={localAvatar} style={styles.avatar} />
 
           <View style={styles.nameBlock}>
-            <Text style={styles.fullName}>{user.firstName} {user.lastName}</Text>
-            <Text style={styles.login}>{user.login}</Text>
+            <Text style={styles.fullName}>{user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() : 'Gość'}</Text>
+            <Text style={styles.login}>{user ? (user.username ?? user.email ?? '') : ''}</Text>
           </View>
         </View>
 
         <View style={styles.statsGrid}>
-          <Text style={styles.stat}>Wypady 🎣: {s.trips}</Text>
-          <Text style={styles.stat}>Ryby 🐟: {s.fishCaught}</Text>
-          <Text style={styles.stat}>Największy połów 🏆: {s.biggestCatchKg ?? "—"} kg</Text>
+          <Text style={styles.stat}>Email: {user?.email ?? '—'}</Text>
+          <Text style={styles.stat}>Ulubiona ryba: {user?.favoriteFish ?? '—'}</Text>
+          <Text style={styles.stat}>Bio: {user?.bio ?? '—'}</Text>
+          <Text style={styles.stat}>Liczba wypraw: {s.trips ?? 0}</Text>
+          <Text style={styles.stat}>Złowione ryby: {s.fishCaught ?? 0}</Text>
+          <Text style={styles.stat}>Największa ryba (kg): {s.biggestCatchKg ?? '—'}</Text>
         </View>
 
         <TouchableOpacity style={styles.button}>

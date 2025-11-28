@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, Platform } from 'react-native';
 import { useAuth } from '../../types/AuthContext';
 import { styles } from './styles';
 
@@ -8,15 +8,43 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    if (!email || !password) {
-      Alert.alert('Błąd', 'Wypełnij wszystkie pola');
-      return;
-    }
+  const API_BASE_URL = Platform.select({
+  android: 'http://10.161.77.16:3000',
+  ios: 'http://localhost:3000',
+  default: 'http://localhost:3000',
+  });
+
+  const handleLogin = async () => {
+    const url = `${API_BASE_URL}/users?email=${encodeURIComponent(email)}`;
+
     try {
-      login(email, password);
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error('Błąd sieciowy');
+      }
+      const users = await response.json();
+
+      if (users.length === 0) {
+        Alert.alert('Błąd', 'Nie znaleziono użytkownika o podanym emailu.');
+        return;
+      }
+      
+      const user = users[0];
+
+      if (user.password !== password) {
+        Alert.alert('Błąd', 'Nieprawidłowe hasło.');
+        return;
+      }
+
+      try {
+        login(user);
+      } catch  {
+        Alert.alert('Błąd', 'Wystąpił błąd podczas logowania. Spróbuj ponownie.');
+      }
     } catch (error) {
-      Alert.alert('Błąd logowania', 'Nieprawidłowy login lub hasło');
+      Alert.alert('Błąd', 'Wystąpił błąd podczas logowania. Spróbuj ponownie.');
+      console.error('Błąd logowania:', error);
+      return;
     }
   };
 

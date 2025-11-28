@@ -1,0 +1,139 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "username": "Wodny_Szaman",
+      "email": "adam",
+      "password": "haslo123",
+      "firstName": "Adam",
+      "lastName": "Nowak",
+      "favoriteFish": "Szczupak",
+      "bio": "Specjalista od dużych drapieżników.",
+      "stats": {
+        "trips": 12,
+        "fishCaught": 45,
+        "biggestCatchKg": 8.5
+      }
+    },
+    {
+      "id": "u2",
+      "username": "Karp_Krol",
+      "email": "piotr",
+      "password": "haslo123",
+      "firstName": "Piotr",
+      "lastName": "Zieliński",
+      "favoriteFish": "Karp",
+      "bio": "Cierpliwość to klucz. Uwielbiam nocki nad wodą i ciszę.",
+      "stats": {
+        "trips": 50,
+        "fishCaught": 102,
+        "biggestCatchKg": 18.2
+      }
+    },
+    {
+      "id": "u3",
+      "username": "FlyGirl",
+      "email": "anna",
+      "password": "haslo123",
+      "firstName": "Anna",
+      "lastName": "Kowalska",
+      "favoriteFish": "Pstrąg",
+      "bio": "Tylko wędkarstwo muchowe w górskich potokach.",
+      "stats": {
+        "trips": 24,
+        "fishCaught": 15,
+        "biggestCatchKg": 2.1
+      }
+    },
+    {
+      "id": "u4",
+      "username": "Sandacz_Master",
+      "email": "tomek",
+      "password": "haslo123",
+      "firstName": "Tomasz",
+      "lastName": "Wiśniewski",
+      "favoriteFish": "Sandacz",
+      "bio": "Łowię tylko z łodzi. Spinning to moje życie.",
+      "stats": {
+        "trips": 8,
+        "fishCaught": 3,
+        "biggestCatchKg": 5.4
+      }
+    }
+  ],
+  "trips": [
+    {
+      "id": "9eb9",
+      "userId": "u1",
+      "date": "28.11.2025",
+      "startTime": "22:05",
+      "spotId": "1",
+      "spotName": "Jezioro Białe",
+      "spotLocation": "Okuninka, woj. lubelskie",
+      "catches": [
+        {
+          "id": "1764363937549",
+          "gatunek": "Karp",
+          "nazwa": "Karp",
+          "waga": 5.5,
+          "dlugosc": 65,
+          "godzina": "22:05",
+          "przyneta": "Groszek",
+          "notatki": ""
+        }
+      ]
+    },
+    {
+      "id": "b965",
+      "userId": "u1",
+      "date": "28.11.2025",
+      "startTime": "22:05",
+      "spotId": "1",
+      "spotName": "Jezioro Białe",
+      "spotLocation": "Okuninka, woj. lubelskie",
+      "catches": [
+        {
+          "id": "1764363937549",
+          "gatunek": "Karp",
+          "nazwa": "Karp",
+          "waga": 5.5,
+          "dlugosc": 65,
+          "godzina": "22:05",
+          "przyneta": "Groszek",
+          "notatki": ""
+        },
+        {
+          "id": "1764365028555",
+          "gatunek": "Amur ",
+          "nazwa": "Amur ",
+          "waga": 15,
+          "dlugosc": 86,
+          "godzina": "22:23",
+          "przyneta": "Pelet",
+          "notatki": ""
+        }
+      ]
+    },
+    {
+      "id": "4a0a",
+      "userId": "u1",
+      "date": "28.11.2025",
+      "startTime": "22:26",
+      "spotId": "1",
+      "spotName": "Jezioro Białe",
+      "spotLocation": "Okuninka, woj. lubelskie",
+      "catches": [
+        {
+          "id": "1764365183532",
+          "gatunek": "Sandacz",
+          "nazwa": "Sandacz",
+          "waga": 5.5,
+          "dlugosc": 65,
+          "godzina": "22:26",
+          "przyneta": "Pelet",
+          "notatki": ""
+        }
+      ]
+    }
+  ]
+}

@@ -256,7 +256,7 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#2c5f2d',
   },
-  // Modal styles
+  //style dla modali
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -285,6 +285,12 @@ export const styles = StyleSheet.create({
     fontSize: 36,
     color: '#666',
     fontWeight: '300',
+  },
+  centeredModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center', 
+    alignItems: 'center',
   },
   spotOption: {
     flexDirection: 'row',
@@ -319,5 +325,97 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: '#2c5f2d',
     fontWeight: 'bold',
+  },
+  modalContainer: { 
+    width: '85%', 
+    backgroundColor: '#fff', 
+    borderRadius: 15, 
+    padding: 20, 
+    maxHeight: '60%' 
+  },
+  fishModalContainer: { 
+    width: '90%', 
+    backgroundColor: '#fff', 
+    borderRadius: 15, 
+    padding: 20 
+  },  
+  fishModalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+    color: '#2c5f2d',
+  },
+  modalItem: { 
+    padding: 15, 
+    borderBottomWidth: 1, 
+    borderBottomColor: '#eee' 
+  },
+  modalItemTitle: { 
+    fontSize: 16, 
+    fontWeight: 'bold' 
+  },
+  modalItemSub: { 
+    fontSize: 14, 
+    color: '#666' 
+  },
+  modalCancelBtn: { 
+    marginTop: 15, 
+    padding: 10, 
+    alignItems: 'center' 
+  },
+  modalCancelText: { 
+    color: '#666', 
+    fontSize: 16 
+  },
+  inputLabel: { 
+    fontSize: 14, 
+    fontWeight: '600', 
+    color: '#333', 
+    marginBottom: 5, 
+    marginTop: 10 
+  },
+  input: { 
+    backgroundColor: '#f9f9f9', 
+    borderWidth: 1, 
+    borderColor: '#ddd', 
+    borderRadius: 8, 
+    padding: 12, 
+    fontSize: 16 
+  },
+  inputRow: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between' 
+  },
+  modalBtnRow: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    marginTop: 25 
+  },
+  modalBtnCancel: { 
+    flex: 1, 
+    padding: 15, 
+    marginRight: 10, 
+    backgroundColor: '#eee', 
+    borderRadius: 8, 
+    alignItems: 'center' 
+  },
+  modalBtnAdd: { 
+    flex: 1, 
+    padding: 15, 
+    marginLeft: 10, 
+    backgroundColor: '#2E7D32', 
+    borderRadius: 8, 
+    alignItems: 'center' 
+  },
+  btnTextWhite: { 
+    color: '#fff', 
+    fontWeight: 'bold', 
+    fontSize: 16 
+  },
+  btnTextBlack: { 
+    color: '#333', 
+    fontWeight: 'bold', 
+    fontSize: 16 
   },
 });

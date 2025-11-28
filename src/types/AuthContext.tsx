@@ -1,14 +1,19 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 interface User {
-  email: string;
-  name: string;
+  id?: string;
+  email?: string;
+  username?: string;
+  firstName?: string;
+  lastName?: string;
+  [key: string]: any;
 }
 
 interface AuthContextType {
   isLoggedIn: boolean;
   user: User | null;
-  login: (email: string, password: string) => void;
+  //Funkcja do logowania użytkownika
+  login: (user: User) => void;
   logout: () => void;
 }
 
@@ -18,16 +23,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
-  const login = (email: string, password: string) => {
-    if (email === 'admin' && password === 'admin') {
-      setUser({ 
-        email, 
-        name: 'admin' 
-      });
-      setIsLoggedIn(true);
-    } else {
-      throw new Error('Nieprawidłowe dane');
-    }
+  const login = (user: User) => {
+    setUser(user);
+    setIsLoggedIn(true);
   };
 
   const logout = () => {
