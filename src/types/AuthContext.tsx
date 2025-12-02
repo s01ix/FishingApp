@@ -12,7 +12,6 @@ interface User {
 interface AuthContextType {
   isLoggedIn: boolean;
   user: User | null;
-  //Funkcja do logowania użytkownika
   login: (user: User) => void;
   logout: () => void;
 }

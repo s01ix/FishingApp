@@ -1,48 +1,57 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useAuth } from '../../types/AuthContext';
 import { styles } from './styles';
-import {API_URL} from '../../components/config';
+import { API_URL } from '../../components/config';
+import { calculateUserStats } from '../../components/statsCalculator';
+
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AuthStackParamList } from '../../types/navigation';
+
 export default function LoginScreen() {
   const { login } = useAuth();
+  
+  const navigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-
   const handleLogin = async () => {
-    const url = `${API_URL}/users?email=${encodeURIComponent(email)}`;
+    const url = `${API_URL}/users?email=${encodeURIComponent(email)}&_embed=trips`;
 
     try {
       const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error('Błąd sieciowy');
-      }
+      if (!response.ok) throw new Error('Błąd sieciowy');
+      
       const users = await response.json();
 
       if (users.length === 0) {
-        Alert.alert('Błąd', 'Nie znaleziono użytkownika o podanym emailu.');
+        Alert.alert('Błąd', 'Nie znaleziono użytkownika.');
         return;
       }
       
-      const user = users[0];
+      const rawUser = users[0];
 
-      if (user.password !== password) {
+      if (rawUser.password !== password) {
         Alert.alert('Błąd', 'Nieprawidłowe hasło.');
         return;
       }
 
-      try {
-        login(user);
-      } catch  {
-        Alert.alert('Błąd', 'Wystąpił błąd podczas logowania. Spróbuj ponownie.');
-      }
+      const processedUser = calculateUserStats(rawUser);
+
+      login(processedUser);
+
     } catch (error) {
-      Alert.alert('Błąd', 'Wystąpił błąd podczas logowania. Spróbuj ponownie.');
-      console.error('Błąd logowania:', error);
-      return;
+      Alert.alert('Błąd', 'Wystąpił problem z logowaniem.');
+      console.error(error);
     }
   };
-
+  
+  const handleRegisterNavigation = () => {
+    navigation.navigate('Register');
+  };
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>🎣 Fishing App</Text>
@@ -72,10 +81,9 @@ export default function LoginScreen() {
         <Text style={styles.buttonText}>Zaloguj</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity>
+      <TouchableOpacity onPress={handleRegisterNavigation}>
         <Text style={styles.link}>Nie masz konta? Zarejestruj się</Text>
       </TouchableOpacity>
     </View>
   );
 }
-

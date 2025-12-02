@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react'; 
 import {
   Text,
   View,
@@ -11,14 +11,15 @@ import {
   Platform,
   TextInput,
   FlatList,
+  ActivityIndicator, 
 } from 'react-native';
 import { styles } from './styles';
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native"; 
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth } from '../../types/AuthContext';
-import {API_URL} from '../../components/config';
+import { API_URL } from '../../components/config';
+import { SpotsStackParamList } from '../../types/navigation'; 
 
-
-// Import typów z innych ekranów
 interface FishingSpot {
   id: string;
   nazwa: string;
@@ -38,36 +39,58 @@ interface CaughtFish {
 
 export default function NewFishing() {
   const { user } = useAuth();
-
-
+  
+  const navigation = useNavigation<any>(); 
 
   const [currentDate] = useState(new Date());
+  
+  const [spots, setSpots] = useState<FishingSpot[]>([]);
+  const [isLoadingSpots, setIsLoadingSpots] = useState(false);
+
   const [selectedSpot, setSelectedSpot] = useState<FishingSpot | null>(null);
   const [caughtFishes, setCaughtFishes] = useState<CaughtFish[]>([]);
   const [showSpotPicker, setShowSpotPicker] = useState(false);
 
-  //stany dla modala dodawania ryby
   const [isModalVisible, setModalVisible] = useState(false);
   const [tempSpecies, setTempSpecies] = useState('');
   const [tempWeight, setTempWeight] = useState('');
   const [tempLength, setTempLength] = useState('');
   const [tempBait, setTempBait] = useState('');
-//funkcje dla modala dodawania ryby
-const openAddFishModal = () => {
-    // Czyścimy pola przed otwarciem
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchSpots = async () => {
+        setIsLoadingSpots(true);
+        try {
+          const response = await fetch(`${API_URL}/fishingSpots`);
+          if (response.ok) {
+            const data = await response.json();
+            setSpots(data);
+          }
+        } catch (error) {
+          console.error("Błąd pobierania łowisk:", error);
+        } finally {
+          setIsLoadingSpots(false);
+        }
+      };
+
+      fetchSpots();
+    }, [])
+  );
+
+  const openAddFishModal = () => {
     setTempSpecies('');
     setTempWeight('');
     setTempLength('');
     setTempBait('');
     setModalVisible(true);
   };
-// Zapisz rybę z modala
-const saveFishFromModal = () => {
+
+  const saveFishFromModal = () => {
     if (!tempSpecies || !tempWeight) {
       Alert.alert("Błąd", "Podaj przynajmniej gatunek i wagę ryby.");
       return;
     }
-    // Tworzenie obiektu ryby
     const newFish: CaughtFish = {
       id: Date.now().toString(),
       gatunek: tempSpecies,
@@ -79,31 +102,9 @@ const saveFishFromModal = () => {
       notatki: ''
     };
 
-    // Dodanie do listy
     setCaughtFishes([...caughtFishes, newFish]);
-    
-    // Zamknięcie modala
     setModalVisible(false);
   };
-
-  // Przykładowe łowiska
-  const availableSpots: FishingSpot[] = [
-    {
-      id: '1',
-      nazwa: 'Jezioro Białe',
-      lokalizacja: 'Okuninka, woj. lubelskie',
-    },
-    {
-      id: '2',
-      nazwa: 'Zalew Zegrzyński',
-      lokalizacja: 'Nieporęt, woj. mazowieckie',
-    },
-    {
-      id: '3',
-      nazwa: 'Staw Kowalski',
-      lokalizacja: 'Kowal, woj. kujawsko-pomorskie',
-    },
-  ];
 
   const formatDate = (date: Date): string => {
     return date.toLocaleDateString('pl-PL', {
@@ -120,23 +121,20 @@ const saveFishFromModal = () => {
     });
   };
 
-const navigation = useNavigation();
-
-const handleGoBack = () => {
-  if (caughtFishes.length > 0) {
-    Alert.alert(
-      'Czy na pewno?',
-      'Masz niezapisane dane. Czy chcesz wyjść?',
-      [
-        { text: 'Anuluj', style: 'cancel' },
-        { text: 'Wyjdź', onPress: () => navigation.goBack(), style: 'destructive' },
-      ]
-    );
-  } else {
-    navigation.goBack();
-  }
-};
-
+  const handleGoBack = () => {
+    if (caughtFishes.length > 0) {
+      Alert.alert(
+        'Czy na pewno?',
+        'Masz niezapisane dane. Czy chcesz wyjść?',
+        [
+          { text: 'Anuluj', style: 'cancel' },
+          { text: 'Wyjdź', onPress: () => navigation.goBack(), style: 'destructive' },
+        ]
+      );
+    } else {
+      navigation.goBack();
+    }
+  };
 
   const handleSave = async () => {
     if (!selectedSpot) {
@@ -165,7 +163,6 @@ const handleGoBack = () => {
     };
 
     try {
-      //Wysłanie zapytania do serwera
       const response = await fetch(`${API_URL}/trips`, {
         method: 'POST',
         headers: {
@@ -175,7 +172,6 @@ const handleGoBack = () => {
       });
 
       if (response.ok) {
-        //udało się zapisać
         Alert.alert('Sukces', 'Połów został zapisany w bazie!', [
           { 
             text: 'OK', 
@@ -211,6 +207,15 @@ const handleGoBack = () => {
   const handleSpotSelect = (spot: FishingSpot) => {
     setSelectedSpot(spot);
     setShowSpotPicker(false);
+  };
+
+  const handleAddNewSpot = () => {
+    setShowSpotPicker(false); 
+    try {
+       navigation.navigate('SpotsTab', { screen: 'AddFishingSpot' });
+    } catch (e) {
+       navigation.navigate('AddFishingSpot');
+    }
   };
 
   const renderFishItem = (fish: CaughtFish) => (
@@ -264,7 +269,6 @@ const handleGoBack = () => {
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Informacje o połowie */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Informacje</Text>
 
@@ -287,7 +291,6 @@ const handleGoBack = () => {
           </View>
         </View>
 
-        {/* Wybór łowiska */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Łowisko</Text>
 
@@ -315,7 +318,6 @@ const handleGoBack = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Lista złowionych ryb */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>
@@ -342,7 +344,6 @@ const handleGoBack = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Podsumowanie */}
         {caughtFishes.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Podsumowanie</Text>
@@ -368,7 +369,6 @@ const handleGoBack = () => {
         )}
       </ScrollView>
 
-      {/* Modal wyboru łowiska */}
       <Modal
         visible={showSpotPicker}
         transparent={true}
@@ -383,41 +383,47 @@ const handleGoBack = () => {
                 <Text style={styles.modalClose}>×</Text>
               </TouchableOpacity>
             </View>
-
-            <FlatList
-              data={availableSpots}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.spotOption}
-                  onPress={() => handleSpotSelect(item)}
-                >
-                  <View>
-                    <Text style={styles.spotOptionName}>{item.nazwa}</Text>
-                    <Text style={styles.spotOptionLocation}>
-                      📍 {item.lokalizacja}
+            
+            {isLoadingSpots ? (
+                <ActivityIndicator size="large" color="#2c5f2d" style={{margin: 20}} />
+            ) : (
+                <FlatList
+                data={spots} 
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                    <TouchableOpacity
+                    style={styles.spotOption}
+                    onPress={() => handleSpotSelect(item)}
+                    >
+                    <View>
+                        <Text style={styles.spotOptionName}>{item.nazwa}</Text>
+                        <Text style={styles.spotOptionLocation}>
+                        📍 {item.lokalizacja}
+                        </Text>
+                    </View>
+                    {selectedSpot?.id === item.id && (
+                        <Text style={styles.checkmark}>✓</Text>
+                    )}
+                    </TouchableOpacity>
+                )}
+                ListEmptyComponent={
+                    <Text style={{textAlign: 'center', padding: 20, color: 'gray'}}>
+                        Brak dostępnych łowisk. Dodaj nowe!
                     </Text>
-                  </View>
-                  {selectedSpot?.id === item.id && (
-                    <Text style={styles.checkmark}>✓</Text>
-                  )}
-                </TouchableOpacity>
-              )}
-            />
+                }
+                />
+            )}
 
             <TouchableOpacity
               style={styles.addNewSpotButton}
-              onPress={() => {
-                setShowSpotPicker(false);
-                console.log('Dodaj nowe łowisko');
-              }}
+              onPress={handleAddNewSpot} 
             >
               <Text style={styles.addNewSpotText}>+ Dodaj nowe łowisko</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
-      {/* Modal dodawania ryby */}
+
       <Modal visible={isModalVisible} animationType="fade" transparent>
         <View style={styles.centeredModalOverlay}>
           <View style={styles.fishModalContainer}>

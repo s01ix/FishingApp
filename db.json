@@ -8,12 +8,7 @@
       "firstName": "Adam",
       "lastName": "Nowak",
       "favoriteFish": "Szczupak",
-      "bio": "Specjalista od dużych drapieżników.",
-      "stats": {
-        "trips": 12,
-        "fishCaught": 45,
-        "biggestCatchKg": 8.5
-      }
+      "bio": "Specjalista od dużych drapieżników. Kocham mazurskie jeziora."
     },
     {
       "id": "u2",
@@ -23,12 +18,7 @@
       "firstName": "Piotr",
       "lastName": "Zieliński",
       "favoriteFish": "Karp",
-      "bio": "Cierpliwość to klucz. Uwielbiam nocki nad wodą i ciszę.",
-      "stats": {
-        "trips": 50,
-        "fishCaught": 102,
-        "biggestCatchKg": 18.2
-      }
+      "bio": "Cierpliwość to klucz. Uwielbiam nocki nad wodą i ciszę."
     },
     {
       "id": "u3",
@@ -38,12 +28,7 @@
       "firstName": "Anna",
       "lastName": "Kowalska",
       "favoriteFish": "Pstrąg",
-      "bio": "Tylko wędkarstwo muchowe w górskich potokach.",
-      "stats": {
-        "trips": 24,
-        "fishCaught": 15,
-        "biggestCatchKg": 2.1
-      }
+      "bio": "Tylko wędkarstwo muchowe w górskich potokach."
     },
     {
       "id": "u4",
@@ -53,87 +38,165 @@
       "firstName": "Tomasz",
       "lastName": "Wiśniewski",
       "favoriteFish": "Sandacz",
-      "bio": "Łowię tylko z łodzi. Spinning to moje życie.",
-      "stats": {
-        "trips": 8,
-        "fishCaught": 3,
-        "biggestCatchKg": 5.4
-      }
+      "bio": "Łowię tylko z łodzi. Spinning to moje życie."
+    },
+    {
+      "id": "1764705676384",
+      "email": "JanNowak@wp.pl",
+      "username": "JanNowak",
+      "password": "Rybka11",
+      "firstName": "Janusz",
+      "lastName": "Nowak",
+      "favoriteFish": "Nie podano",
+      "bio": "Nowy wędkarz w aplikacji!"
     }
   ],
   "trips": [
     {
-      "id": "9eb9",
+      "id": "trip_2",
       "userId": "u1",
-      "date": "28.11.2025",
-      "startTime": "22:05",
-      "spotId": "1",
+      "date": "22.11.2025",
+      "spotId": "spot_1",
       "spotName": "Jezioro Białe",
-      "spotLocation": "Okuninka, woj. lubelskie",
+      "spotLocation": "Okuninka",
       "catches": [
         {
-          "id": "1764363937549",
-          "gatunek": "Karp",
-          "nazwa": "Karp",
-          "waga": 5.5,
-          "dlugosc": 65,
-          "godzina": "22:05",
-          "przyneta": "Groszek",
-          "notatki": ""
-        }
-      ]
-    },
-    {
-      "id": "b965",
-      "userId": "u1",
-      "date": "28.11.2025",
-      "startTime": "22:05",
-      "spotId": "1",
-      "spotName": "Jezioro Białe",
-      "spotLocation": "Okuninka, woj. lubelskie",
-      "catches": [
-        {
-          "id": "1764363937549",
-          "gatunek": "Karp",
-          "nazwa": "Karp",
-          "waga": 5.5,
-          "dlugosc": 65,
-          "godzina": "22:05",
-          "przyneta": "Groszek",
-          "notatki": ""
+          "id": "catch_2",
+          "gatunek": "Amur",
+          "waga": 12,
+          "dlugosc": 90,
+          "przyneta": "Kulki proteinowe"
         },
         {
-          "id": "1764365028555",
-          "gatunek": "Amur ",
-          "nazwa": "Amur ",
-          "waga": 15,
-          "dlugosc": 86,
-          "godzina": "22:23",
-          "przyneta": "Pelet",
-          "notatki": ""
+          "id": "catch_3",
+          "gatunek": "Leszcz",
+          "waga": 1.5,
+          "dlugosc": 40,
+          "przyneta": "Biały robak"
         }
       ]
     },
     {
-      "id": "4a0a",
+      "id": "trip_3",
       "userId": "u1",
       "date": "28.11.2025",
-      "startTime": "22:26",
+      "spotId": "spot_2",
+      "spotName": "Rzeka Bug",
+      "spotLocation": "Włodawa",
+      "catches": [
+        {
+          "id": "catch_4",
+          "gatunek": "Szczupak",
+          "waga": 3.2,
+          "dlugosc": 70,
+          "przyneta": "Wobler"
+        }
+      ]
+    },
+    {
+      "id": "trip_4",
+      "userId": "u2",
+      "date": "25.11.2025",
+      "spotId": "spot_3",
+      "spotName": "Zalew Zemborzycki",
+      "spotLocation": "Lublin",
+      "catches": [
+        {
+          "id": "catch_5",
+          "gatunek": "Karp",
+          "waga": 18.2,
+          "dlugosc": 98,
+          "przyneta": "Kulki truskawkowe"
+        }
+      ]
+    },
+    {
+      "id": "trip_5",
+      "userId": "u3",
+      "date": "26.11.2025",
+      "spotId": "spot_4",
+      "spotName": "Rzeka San",
+      "spotLocation": "Bieszczady",
+      "catches": []
+    },
+    {
+      "id": "a529",
+      "userId": "u1",
+      "date": "02.12.2025",
+      "startTime": "21:09",
       "spotId": "1",
       "spotName": "Jezioro Białe",
       "spotLocation": "Okuninka, woj. lubelskie",
       "catches": [
         {
-          "id": "1764365183532",
-          "gatunek": "Sandacz",
-          "nazwa": "Sandacz",
-          "waga": 5.5,
-          "dlugosc": 65,
-          "godzina": "22:26",
-          "przyneta": "Pelet",
+          "id": "1764706504698",
+          "gatunek": "karp",
+          "nazwa": "karp",
+          "waga": 12,
+          "dlugosc": 50,
+          "godzina": "21:15",
+          "przyneta": "ser",
           "notatki": ""
         }
       ]
+    }
+  ],
+  "fishingSpots": [
+    {
+      "id": "spot_1",
+      "nazwa": "Jezioro Białe",
+      "lokalizacja": "Okuninka, woj. lubelskie",
+      "opis": "Świetne miejsce na karpia i szczupaka. Czysta woda.",
+      "latitude": 51.493,
+      "longitude": 23.535,
+      "rodzaj": "Jezioro"
+    },
+    {
+      "id": "spot_2",
+      "nazwa": "Rzeka Bug",
+      "lokalizacja": "Włodawa, granica",
+      "opis": "Dzikie rzeka, trudny dojazd, ale warto dla sumów.",
+      "latitude": 51.55,
+      "longitude": 23.55,
+      "rodzaj": "Rzeka"
+    },
+    {
+      "id": "spot_3",
+      "nazwa": "Zalew Zemborzycki",
+      "lokalizacja": "Lublin",
+      "opis": "Popularne miejsce, duża presja wędkarska.",
+      "latitude": 51.196,
+      "longitude": 22.54,
+      "rodzaj": "Zalew"
+    },
+    {
+      "id": "spot_4",
+      "nazwa": "Rzeka San",
+      "lokalizacja": "Bieszczady",
+      "opis": "Kraina pstrąga i lipienia.",
+      "latitude": 49.5,
+      "longitude": 22.3,
+      "rodzaj": "Rzeka"
+    },
+    {
+      "id": "1764703663947",
+      "nazwa": "Cedzyna",
+      "lokalizacja": "Kielce",
+      "opis": "Płatny parking ",
+      "latitude": 52,
+      "longitude": 52,
+      "rodzaj": "Jezioro",
+      "isPublic": true
+    },
+    {
+      "id": "1764706949806",
+      "nazwa": "Kamienna",
+      "lokalizacja": "Starachowice ",
+      "opis": "Bardzo dużo pokrzyw ",
+      "latitude": 128,
+      "longitude": 128,
+      "rodzaj": "Rzeka",
+      "isPublic": true
     }
   ]
 }

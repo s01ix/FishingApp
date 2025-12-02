@@ -13,7 +13,8 @@ import SpotsScreen from './src/views/FishingSpots';
 import ProfileScreen from './src/views/Profile';
 import FishDetailScreen from './src/views/FishDetail';
 import AddFishingScreen from './src/views/NewFishing';
-
+import AddFishingSpot from './src/views/AddFishingSpot/AddFishingSpot';
+import RegisterScreen from './src/views/Register';
 
 import type {
   RootStackParamList,
@@ -22,6 +23,8 @@ import type {
   HistoryStackParamList,
 } from './src/types/navigation';
 import NewFishing from './src/views/NewFishing';
+import { SpotsStackParamList } from './src/types/navigation'; // Upewnij się że importujesz ten typ
+const SpotsStack = createNativeStackNavigator<SpotsStackParamList>();
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
@@ -38,10 +41,25 @@ function HistoryNavigator() {
     </HistoryStack.Navigator>
   );
 }
+
+function SpotsNavigator() {
+  return (
+    <SpotsStack.Navigator screenOptions={{ headerShown: false }}>
+      {/* Ekran listy łowisk (startowy) */}
+      <SpotsStack.Screen name="SpotsList" component={SpotsScreen} />
+      
+      {/* Ekran dodawania nowego łowiska */}
+      <SpotsStack.Screen name="AddFishingSpot" component={AddFishingSpot} />
+    </SpotsStack.Navigator>
+  );
+}
 function AuthNavigator() {
   return (
     <AuthStack.Navigator screenOptions={{ headerShown: false }}>
       <AuthStack.Screen name="Login" component={LoginScreen} />
+      
+      <AuthStack.Screen name="Register" component={RegisterScreen} />
+      
     </AuthStack.Navigator>
   );
 }
@@ -114,7 +132,6 @@ function MainTabs() {
         options={{ tabBarLabel: 'Połowy' }}
         listeners={{
           tabPress: (e) => {
-          //  e.preventDefault(); // blokuje nawigację
             console.log('Kliknięto: Połowy');
           },
         }}
@@ -129,20 +146,18 @@ function MainTabs() {
         }}
         listeners={{
           tabPress: (e) => {
-            //e.preventDefault(); // blokuje nawigację
             console.log('Kliknięto Dodaj');
           },
         }}
       />
 
-      <Tab.Screen
+   <Tab.Screen
         name="SpotsTab"
-        component={SpotsScreen}
+        component={SpotsNavigator} 
         options={{ tabBarLabel: 'Łowiska' }}
         listeners={{
           tabPress: (e) => {
-          //  e.preventDefault(); // blokuje nawigację
-            console.log('🗺️ KlikniętoŁowiska');
+            console.log('🗺️ Kliknięto Łowiska');
           },
         }}
       />

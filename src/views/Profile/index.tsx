@@ -7,11 +7,11 @@ import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
+  Alert, 
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from '../../types/AuthContext';
 
-// Typ użytkownika
 type UserProfile = {
   firstName?: string;
   lastName?: string;
@@ -26,22 +26,36 @@ type UserProfile = {
   };
 };
 
-// 🔹 Avatarka lokalna
 const localAvatar = require("../../../assets/avatar.png");
 
 export default function ProfileScreen() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigation = useNavigation();
 
   const s = (user && (user.stats as any)) ?? { trips: 0, fishCaught: 0 };
 
   const handleGoBack = () => navigation.goBack();
 
+  const handleLogout = () => {
+    Alert.alert(
+      "Wylogowanie",
+      "Czy na pewno chcesz się wylogować?",
+      [
+        { text: "Anuluj", style: "cancel" },
+        { 
+          text: "Wyloguj", 
+          style: "destructive", 
+          onPress: () => logout() 
+        }
+      ]
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
 
-     <View style={styles.header}>
+      <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
@@ -49,10 +63,8 @@ export default function ProfileScreen() {
         <Text style={styles.headerTitle}>Profil użytkownika</Text>
 
         <View style={{ width: 44 }} /> 
-        {/* placeholder żeby tytuł był na środku */}
       </View>
 
-      {/* GŁÓWNA ZAWARTOŚĆ */}
       <View style={styles.wrapper}>
         <View style={styles.headerRow}>
           <Image source={localAvatar} style={styles.avatar} />
@@ -75,12 +87,16 @@ export default function ProfileScreen() {
         <TouchableOpacity style={styles.button}>
           <Text style={styles.buttonText}>Edytuj profil</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutButtonText}>Wyloguj się</Text>
+        </TouchableOpacity>
+
       </View>
     </SafeAreaView>
   );
 }
 
-// STYLE
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -129,6 +145,8 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
+    borderWidth: 2,
+    borderColor: "#2c5f2d", 
     marginRight: 15,
   },
 
@@ -165,6 +183,22 @@ const styles = StyleSheet.create({
 
   buttonText: {
     color: "#fff",
+    fontWeight: "600",
+    fontSize: 16,
+  },
+
+  logoutButton: {
+    marginTop: 12,
+    padding: 12,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#d32f2f", 
+    borderRadius: 20,
+    alignItems: "center",
+  },
+
+  logoutButtonText: {
+    color: "#d32f2f",
     fontWeight: "600",
     fontSize: 16,
   },

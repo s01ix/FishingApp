@@ -54,9 +54,7 @@ export default function History() {
       let biggestFish = null;
 
       if (catches.length > 0) {
-          // Sortujemy od największej do najmniejszej ryby
           catches.sort((a: any, b: any) => b.waga - a.waga);
-          // Największa ryba 
           const winner = catches[0];
           
           biggestFish = {
@@ -82,7 +80,6 @@ export default function History() {
     }
 
   };
-  // Odświeżenie danych przy każdym wejściu na ekran
   useFocusEffect(
     useCallback(() => {
       fetchFishingHistory();

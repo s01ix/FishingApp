@@ -1,5 +1,5 @@
-import React from 'react';
-import { useNavigation } from "@react-navigation/native";
+import React, { useState, useCallback } from 'react';
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import {
   Text,
   View,
@@ -10,11 +10,17 @@ import {
   ListRenderItem,
   SafeAreaView,
   StatusBar,
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 import { styles } from './styles';
+import { useAuth } from '../../types/AuthContext';
+import { API_URL } from '../../components/config'; 
+import AddFishingSpot from '../AddFishingSpot/AddFishingSpot';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { SpotsStackParamList } from '../../types/navigation';
 
 
-// Typ dla łowiska
 export interface FishingSpot {
   id: string;
   nazwa: string;
@@ -22,82 +28,81 @@ export interface FishingSpot {
   opis: string;
   latitude: number;
   longitude: number;
-  rodzaj?: string; // np. "Jezioro", "Rzeka", "Staw"
-  liczbaPolowan?: number; // ile razy użytkownik łowił w tym miejscu
+  rodzaj?: string;
+  liczbaPolowan?: number; 
 }
 
 export default function FishingSpots() {
-  // Przykładowe dane - lista łowisk
-  const lowiska: FishingSpot[] = [
-    {
-      id: '1',
-      nazwa: 'Jezioro Białe',
-      lokalizacja: 'Okuninka, woj. lubelskie',
-      opis: 'Świetne miejsce na karpia i szczupaka',
-      latitude: 51.3032,
-      longitude: 23.1248,
-      rodzaj: 'Jezioro',
-      liczbaPolowan: 12,
-    },
-    {
-      id: '2',
-      nazwa: 'Zalew Zegrzyński',
-      lokalizacja: 'Nieporęt, woj. mazowieckie',
-      opis: 'Duże łowisko z różnorodnością gatunków',
-      latitude: 52.4667,
-      longitude: 21.0500,
-      rodzaj: 'Zalew',
-      liczbaPolowan: 8,
-    },
-    {
-      id: '3',
-      nazwa: 'Staw Kowalski',
-      lokalizacja: 'Kowal, woj. kujawsko-pomorskie',
-      opis: 'Prywatne łowisko, spokojne miejsce',
-      latitude: 52.5167,
-      longitude: 18.8833,
-      rodzaj: 'Staw',
-      liczbaPolowan: 3,
-    },
-  ];
+  const { user } = useAuth();
+const navigation = useNavigation<NativeStackNavigationProp<SpotsStackParamList>>();  
+  const [spots, setSpots] = useState<FishingSpot[]>([]);
+  const [loading, setLoading] = useState(true);
 
-const navigation = useNavigation();
+  const fetchSpots = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/fishingSpots`);
+      if (!response.ok) throw new Error("Problem z pobraniem danych");
+      
+      const data: FishingSpot[] = await response.json();
 
-  const handleGoBack = () => {
-    console.log('Powrót do menu głównego');
-    navigation.goBack()
+
+      
+      const userTrips = user?.trips || [];
+
+      const spotsWithStats = data.map(spot => {
+        const visitCount = userTrips.filter((trip: any) => trip.spotId === spot.id).length;
+        
+        return {
+          ...spot,
+          liczbaPolowan: visitCount
+        };
+      });
+
+      spotsWithStats.sort((a, b) => (b.liczbaPolowan || 0) - (a.liczbaPolowan || 0));
+
+      setSpots(spotsWithStats);
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Błąd", "Nie udało się pobrać listy łowisk.");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchSpots();
+    }, [user]) 
+  );
+
+  const handleGoBack = () => navigation.goBack();
+
   const handleAddNew = () => {
-    console.log('Dodawanie nowego łowiska');
-    //navigation.navigate('AddFishingSpot')
+    console.log('Nawigacja do AddFishingSpot');
+    navigation.navigate('AddFishingSpot'); 
   };
 
   const handleSpotPress = (spot: FishingSpot) => {
     console.log('Szczegóły łowiska:', spot.id);
-    // Tutaj będzie navigation.navigate('FishingSpotDetail', { spotId: spot.id })
   };
 
-  // Funkcja otwierająca Google Maps
   const openMaps = (latitude: number, longitude: number, label: string): void => {
-    const scheme = Platform.select({
-      ios: 'maps://0,0?q=',
-      android: 'geo:0,0?q=',
-    });
+    const scheme = Platform.select({ ios: 'maps://0,0?q=', android: 'geo:0,0?q=' });
     const latLng = `${latitude},${longitude}`;
     const url = Platform.select({
       ios: `${scheme}${label}@${latLng}`,
       android: `${scheme}${latLng}(${label})`,
     });
 
-    Linking.openURL(url as string).catch(() => {
-      // Fallback do przeglądarki jeśli nie ma aplikacji Maps
-      const webUrl = `https://www.google.com/maps/search/?api=1&query=${latLng}`;
-      Linking.openURL(webUrl);
-    });
+    if (url) {
+        Linking.openURL(url).catch(() => {
+            const webUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+            Linking.openURL(webUrl);
+        });
+    }
   };
 
-  // Render pojedynczego łowiska
   const renderItem: ListRenderItem<FishingSpot> = ({ item }) => (
     <TouchableOpacity
       style={styles.card}
@@ -115,12 +120,12 @@ const navigation = useNavigation();
         </View>
         
         <Text style={styles.lokalizacja}>📍 {item.lokalizacja}</Text>
-        <Text style={styles.opis}>{item.opis}</Text>
+        <Text style={styles.opis} numberOfLines={2}>{item.opis}</Text>
         
         {item.liczbaPolowan !== undefined && item.liczbaPolowan > 0 && (
           <View style={styles.statsRow}>
             <Text style={styles.statsText}>
-              🎣 {item.liczbaPolowan} {item.liczbaPolowan === 1 ? 'połów' : 'połowów'}
+              🎣 Twoje wyprawy tutaj: {item.liczbaPolowan}
             </Text>
           </View>
         )}
@@ -133,19 +138,16 @@ const navigation = useNavigation();
           openMaps(item.latitude, item.longitude, item.nazwa);
         }}
       >
-        <Text style={styles.pinIcon}>📍</Text>
+        <Text style={styles.pinIcon}>🗺️</Text>
       </TouchableOpacity>
     </TouchableOpacity>
   );
 
-  // Render pustej listy
   const renderEmptyList = () => (
     <View style={styles.emptyContainer}>
       <Text style={styles.emptyIcon}>🎣</Text>
       <Text style={styles.emptyTitle}>Brak łowisk</Text>
-      <Text style={styles.emptyText}>
-        Dodaj swoje pierwsze łowisko, aby zacząć
-      </Text>
+      <Text style={styles.emptyText}>Sprawdź połączenie z internetem.</Text>
     </View>
   );
 
@@ -153,26 +155,30 @@ const navigation = useNavigation();
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
 
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Moje Łowiska</Text>
+        <Text style={styles.headerTitle}>Baza Łowisk</Text>
         <TouchableOpacity style={styles.addButton} onPress={handleAddNew}>
           <Text style={styles.addIcon}>+</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Lista łowisk */}
-      <FlatList
-        data={lowiska}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContainer}
-        ListEmptyComponent={renderEmptyList}
-        showsVerticalScrollIndicator={false}
-      />
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="large" color="#2c5f2d" />
+        </View>
+      ) : (
+        <FlatList
+            data={spots}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.listContainer}
+            ListEmptyComponent={renderEmptyList}
+            showsVerticalScrollIndicator={false}
+        />
+      )}
     </SafeAreaView>
   );
 }

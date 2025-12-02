@@ -10,12 +10,15 @@ import {
   Linking,
   Platform,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
-import { styles } from './styles';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { styles } from './styles';
+import { API_URL } from '../../components/config'; 
 import type { HistoryStackParamList } from '../../types/navigation'; 
-// Typy danych
+
+
 interface FishingSpot {
   id: string;
   nazwa: string;
@@ -48,14 +51,16 @@ interface FishingSession {
   notatki?: string;
 }
 
+
 export default function FishingDetail() {
-  
   type FishingDetailNavigationProp = NativeStackNavigationProp<HistoryStackParamList, 'FishingDetail'>;
   const navigation = useNavigation<FishingDetailNavigationProp>();
 
-  // Przykładowe dane połowu
+  const [isDeleting, setIsDeleting] = useState(false);
+
+ 
   const [polowData] = useState<FishingSession>({
-    id: '#12345',
+    id: 'trip_1', 
     data: '15.01.2024',
     godzinaRozpoczecia: '06:30',
     godzinaZakonczenia: '14:45',
@@ -90,27 +95,50 @@ export default function FishingDetail() {
         godzina: '10:30',
         przyneta: 'Błystka',
       },
-      {
-        id: '3',
-        gatunek: 'Karp',
-        nazwa: 'Mały karp',
-        waga: 2.1,
-        dlugosc: 42,
-        godzina: '13:20',
-        przyneta: 'Robak',
-      },
     ],
     notatki: 'Świetny dzień! Woda była czysta, dużo brań. Polecam stanowisko przy pomoście.',
   });
 
+
   const handleGoBack = () => {
-    console.log('Powrót do listy');
     navigation.goBack();
   };
 
   const handleEdit = () => {
     console.log('Edycja połowu:', polowData.id);
-    // navigation.navigate('EditFishing', { sessionId: polowData.id })
+    Alert.alert("Info", "Funkcja edycji dostępna wkrótce.");
+  };
+
+  const handleFishPress = (fishId: string) => {
+    console.log('Szczegóły ryby:', fishId);
+    navigation.navigate('FishDetail', { fishID: fishId });
+  };
+
+
+  const performDelete = async () => {
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`${API_URL}/trips/${polowData.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+             throw new Error('Nie znaleziono takiej wyprawy w bazie danych.');
+        }
+        throw new Error('Wystąpił błąd serwera.');
+      }
+
+      Alert.alert('Sukces', 'Wyprawa została usunięta.', [
+        { text: 'OK', onPress: () => navigation.goBack() }
+      ]);
+
+    } catch (error: any) {
+      console.error(error);
+      Alert.alert('Błąd', error.message || 'Nie udało się połączyć z serwerem.');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleDelete = () => {
@@ -121,19 +149,11 @@ export default function FishingDetail() {
         { text: 'Anuluj', style: 'cancel' },
         {
           text: 'Usuń',
-          onPress: () => {
-            console.log('Usuwanie połowu:', polowData.id);
-            // Logika usuwania
-          },
           style: 'destructive',
+          onPress: performDelete,
         },
       ]
     );
-  };
-
-  const handleFishPress = (fishId: string) => {
-    console.log('Szczegóły ryby:', fishId);
-    navigation.navigate('FishDetail', { fishID: fishId })
   };
 
   const openMaps = (latitude: number, longitude: number, label: string): void => {
@@ -147,13 +167,14 @@ export default function FishingDetail() {
       android: `${scheme}${latLng}(${label})`,
     });
 
-    Linking.openURL(url as string).catch(() => {
-      const webUrl = `https://www.google.com/maps/search/?api=1&query=${latLng}`;
-      Linking.openURL(webUrl);
-    });
+    if (url) {
+      Linking.openURL(url).catch(() => {
+        const webUrl = `https://www.google.com/maps/search/?api=1&query=${latLng}`;
+        Linking.openURL(webUrl);
+      });
+    }
   };
 
-  // Obliczenia statystyk
   const getTotalWeight = (): number => {
     return polowData.ryby.reduce((sum, fish) => sum + fish.waga, 0);
   };
@@ -190,7 +211,6 @@ export default function FishingDetail() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
 
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
           <Text style={styles.backIcon}>←</Text>
@@ -200,7 +220,7 @@ export default function FishingDetail() {
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Główne informacje */}
+        
         <View style={styles.mainInfo}>
           <Text style={styles.date}>{polowData.data}</Text>
           <View style={styles.timeRow}>
@@ -214,7 +234,6 @@ export default function FishingDetail() {
           </View>
         </View>
 
-        {/* Łowisko */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Łowisko</Text>
           <View style={styles.spotCard}>
@@ -239,7 +258,6 @@ export default function FishingDetail() {
           </View>
         </View>
 
-        {/* Warunki */}
         {(polowData.pogoda || polowData.temperatura) && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Warunki</Text>
@@ -260,7 +278,6 @@ export default function FishingDetail() {
           </View>
         )}
 
-        {/* Statystyki */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Statystyki</Text>
           <View style={styles.statsGrid}>
@@ -289,7 +306,6 @@ export default function FishingDetail() {
           </View>
         </View>
 
-        {/* Lista złowionych ryb */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
             Złowione ryby ({polowData.ryby.length})
@@ -321,7 +337,6 @@ export default function FishingDetail() {
           ))}
         </View>
 
-        {/* Notatki */}
         {polowData.notatki && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Notatki</Text>
@@ -332,16 +347,24 @@ export default function FishingDetail() {
           </View>
         )}
 
-        {/* Akcje */}
         <View style={styles.actionsContainer}>
           <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
             <Text style={styles.editButtonText}>✏️ Edytuj</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-            <Text style={styles.deleteButtonText}>🗑️ Usuń</Text>
+          <TouchableOpacity 
+            style={[styles.deleteButton, isDeleting && { opacity: 0.6 }]} 
+            onPress={handleDelete}
+            disabled={isDeleting}
+          >
+            {isDeleting ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.deleteButtonText}>🗑️ Usuń</Text>
+            )}
           </TouchableOpacity>
         </View>
+
       </ScrollView>
     </SafeAreaView>
   );

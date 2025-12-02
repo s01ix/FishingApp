@@ -6,6 +6,7 @@ export type RootStackParamList = {
 
 export type AuthStackParamList = {
   Login: undefined;
+  Register: undefined;
 };
 
 export type MainTabsParamList = {
@@ -27,7 +28,8 @@ export type HistoryStackParamList = {
 };
 
 export type SpotsStackParamList = {
-  SpotsList: undefined;
+ SpotsList: undefined;      
+  AddFishingSpot: undefined; 
 };
 
 export type ProfileStackParamList = {

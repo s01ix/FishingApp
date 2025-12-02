@@ -5,7 +5,7 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
+  SafeAreaViewBase,
   StatusBar,
 } from 'react-native';
 import { styles } from './styles';
@@ -70,7 +70,7 @@ export default function FishDetail() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaViewBase style={styles.container}>
       <StatusBar barStyle="light-content" />
       
       {/* Header z guzikiem powrotu */}
@@ -185,6 +185,6 @@ export default function FishDetail() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaViewBase>
   );
 }
