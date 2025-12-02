@@ -14,6 +14,8 @@ import {
 } from 'react-native';
 import { styles } from './styles';
 import { useAuth } from '../../types/AuthContext';
+import {API_URL} from '../../components/config';
+
 
 interface FishingTrip {
   id: string;
@@ -38,11 +40,6 @@ export default function History() {
 
   const [fishingHistory, setFishingHistory] = React.useState<FishingTrip[]>([]);
 
-  const API_URL = Platform.select({
-    android: 'http://10.161.77.16:3000',
-    ios: 'http://localhost:3000',
-    default: 'http://localhost:3000',
-  });
 
   const fetchFishingHistory = async () => {
     if (!user) return;

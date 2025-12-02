@@ -2,20 +2,15 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, Platform } from 'react-native';
 import { useAuth } from '../../types/AuthContext';
 import { styles } from './styles';
-
+import {API_URL} from '../../components/config';
 export default function LoginScreen() {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const API_BASE_URL = Platform.select({
-  android: 'http://10.161.77.16:3000',
-  ios: 'http://localhost:3000',
-  default: 'http://localhost:3000',
-  });
 
   const handleLogin = async () => {
-    const url = `${API_BASE_URL}/users?email=${encodeURIComponent(email)}`;
+    const url = `${API_URL}/users?email=${encodeURIComponent(email)}`;
 
     try {
       const response = await fetch(url);
