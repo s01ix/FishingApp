@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 15,
-    paddingVertical: 12,
+    paddingVertical: 20,
     backgroundColor: '#2c5f2d',
     elevation: 4,
     shadowColor: '#000',
@@ -27,7 +27,6 @@ export const styles = StyleSheet.create({
     width: 44,
   },
 
-  // --- nowe style dla historii połowów ---
   tripCard: {
     backgroundColor: '#fff',
     borderRadius: 12,

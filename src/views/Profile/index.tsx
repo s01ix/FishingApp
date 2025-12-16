@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from '../../types/AuthContext';
+import { styles } from './styles';
 
 type UserProfile = {
   firstName?: string;
@@ -34,7 +35,6 @@ export default function ProfileScreen() {
 
   const s = (user && (user.stats as any)) ?? { trips: 0, fishCaught: 0 };
 
-  const handleGoBack = () => navigation.goBack();
 
   const handleLogout = () => {
     Alert.alert(
@@ -56,13 +56,7 @@ export default function ProfileScreen() {
       <StatusBar barStyle="light-content" />
 
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
-          <Text style={styles.backIcon}>←</Text>
-        </TouchableOpacity>
-
         <Text style={styles.headerTitle}>Profil użytkownika</Text>
-
-        <View style={{ width: 44 }} /> 
       </View>
 
       <View style={styles.wrapper}>
@@ -97,109 +91,3 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f7fa",
-  },
-
-  header: {
-    height: 60,
-    backgroundColor: "#2c5f2d",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 12,
-  },
-
-  backButton: {
-    width: 40,
-    justifyContent: "center",
-    alignItems: "flex-start",
-  },
-
-  backIcon: {
-    fontSize: 26,
-    color: "#fff",
-  },
-
-  headerTitle: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "600",
-  },
-
-  wrapper: {
-    padding: 20,
-    margin: 20,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-  },
-
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    borderWidth: 2,
-    borderColor: "#2c5f2d", 
-    marginRight: 15,
-  },
-
-  nameBlock: {
-    flex: 1,
-  },
-
-  fullName: {
-    fontSize: 22,
-    fontWeight: "bold",
-  },
-
-  login: {
-    color: "gray",
-    marginTop: 2,
-  },
-
-  statsGrid: {
-    marginTop: 15,
-  },
-
-  stat: {
-    fontSize: 16,
-    marginVertical: 3,
-  },
-
-  button: {
-    marginTop: 20,
-    padding: 12,
-    backgroundColor: "#2c5f2d",
-    borderRadius: 20,
-    alignItems: "center",
-  },
-
-  buttonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 16,
-  },
-
-  logoutButton: {
-    marginTop: 12,
-    padding: 12,
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#d32f2f", 
-    borderRadius: 20,
-    alignItems: "center",
-  },
-
-  logoutButtonText: {
-    color: "#d32f2f",
-    fontWeight: "600",
-    fontSize: 16,
-  },
-});

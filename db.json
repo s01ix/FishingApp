@@ -49,6 +49,26 @@
       "lastName": "Nowak",
       "favoriteFish": "Nie podano",
       "bio": "Nowy wędkarz w aplikacji!"
+    },
+    {
+      "id": "1764709963386",
+      "email": "janek123@gmail.com",
+      "username": "janek123",
+      "password": "haslo123",
+      "firstName": "Jan",
+      "lastName": "Kowalski",
+      "favoriteFish": "Nie podano",
+      "bio": "Nowy wędkarz w aplikacji!"
+    },
+    {
+      "id": "1764747090548",
+      "email": "Michal@gmail.com",
+      "username": "Michal",
+      "password": "haslo",
+      "firstName": "Michal",
+      "lastName": "Lesiak",
+      "favoriteFish": "Nie podano",
+      "bio": "Nowy wędkarz w aplikacji!"
     }
   ],
   "trips": [
@@ -139,6 +159,58 @@
           "notatki": ""
         }
       ]
+    },
+    {
+      "id": "b18b",
+      "userId": "1764709963386",
+      "date": "02.12.2025",
+      "startTime": "21:15",
+      "spotId": "spot_3",
+      "spotName": "Zalew Zemborzycki",
+      "spotLocation": "Lublin",
+      "catches": [
+        {
+          "id": "1764710136643",
+          "gatunek": "Sandacz",
+          "nazwa": "Sandacz",
+          "waga": 14,
+          "dlugosc": 12,
+          "godzina": "21:15",
+          "przyneta": "Kukurydza",
+          "notatki": ""
+        },
+        {
+          "id": "1764710163526",
+          "gatunek": "Karp",
+          "nazwa": "Karp",
+          "waga": 8,
+          "dlugosc": 40,
+          "godzina": "21:16",
+          "przyneta": "brak",
+          "notatki": ""
+        }
+      ]
+    },
+    {
+      "id": "f47f",
+      "userId": "1764747090548",
+      "date": "03.12.2025",
+      "startTime": "07:31",
+      "spotId": "spot_1",
+      "spotName": "Jezioro Białe",
+      "spotLocation": "Okuninka, woj. lubelskie",
+      "catches": [
+        {
+          "id": "1764747130976",
+          "gatunek": "Karp",
+          "nazwa": "Karp",
+          "waga": 3,
+          "dlugosc": 15,
+          "godzina": "07:32",
+          "przyneta": "Kukurydza",
+          "notatki": ""
+        }
+      ]
     }
   ],
   "fishingSpots": [
@@ -196,6 +268,16 @@
       "latitude": 128,
       "longitude": 128,
       "rodzaj": "Rzeka",
+      "isPublic": true
+    },
+    {
+      "id": "1764710046410",
+      "nazwa": "Jezioro tarnobrzeskie",
+      "lokalizacja": "Tarnobrzeg",
+      "opis": "Bardzo przyjemnie I czyste :)",
+      "latitude": 100,
+      "longitude": 100,
+      "rodzaj": "Jezioro",
       "isPublic": true
     }
   ]

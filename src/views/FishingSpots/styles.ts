@@ -18,18 +18,16 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
   },
+  placeholder: {
+    width: 44,
+  },
   backButton: {
     padding: 8,
   },
-  backIcon: {
-    fontSize: 28,
-    color: '#fff',
-    fontWeight: 'bold',
-  },
   headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "600",
   },
   addButton: {
     width: 44,

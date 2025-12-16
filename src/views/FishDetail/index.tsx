@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import {
   Text,
   View,
   Image,
   ScrollView,
   TouchableOpacity,
-  SafeAreaViewBase,
+  SafeAreaView,
   StatusBar,
 } from 'react-native';
 import { styles } from './styles';
@@ -38,6 +38,24 @@ export default function FishDetail() {
     const navigation = useNavigation<FishDetailNavigationProp>(); 
     const route = useRoute<FishDetailRouteProp>();
     const { fishID } = route.params;
+        useLayoutEffect(() => {
+      navigation.getParent()?.setOptions({
+        tabBarStyle: { display: 'none' }
+      });
+      
+      return () => {
+        navigation.getParent()?.setOptions({
+          tabBarStyle: {
+            height: 65,
+            paddingBottom: 10,
+            paddingTop: 5,
+            backgroundColor: '#fff',
+            borderTopWidth: 1,
+            borderTopColor: '#e0e0e0',
+          }
+        });
+      };
+    }, [navigation]);
 
   const ryba: Fish = {
     id: '1',
@@ -70,7 +88,7 @@ export default function FishDetail() {
   };
 
   return (
-    <SafeAreaViewBase style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
       
       {/* Header z guzikiem powrotu */}
@@ -185,6 +203,6 @@ export default function FishDetail() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaViewBase>
+    </SafeAreaView>
   );
 }

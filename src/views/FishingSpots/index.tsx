@@ -76,8 +76,6 @@ const navigation = useNavigation<NativeStackNavigationProp<SpotsStackParamList>>
     }, [user]) 
   );
 
-  const handleGoBack = () => navigation.goBack();
-
   const handleAddNew = () => {
     console.log('Nawigacja do AddFishingSpot');
     navigation.navigate('AddFishingSpot'); 
@@ -156,9 +154,7 @@ const navigation = useNavigation<NativeStackNavigationProp<SpotsStackParamList>>
       <StatusBar barStyle="light-content" />
 
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
-          <Text style={styles.backIcon}>←</Text>
-        </TouchableOpacity>
+        <View style = {styles.placeholder} />
         <Text style={styles.headerTitle}>Baza Łowisk</Text>
         <TouchableOpacity style={styles.addButton} onPress={handleAddNew}>
           <Text style={styles.addIcon}>+</Text>

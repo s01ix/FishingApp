@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import {
   Text,
   View,
@@ -11,6 +11,7 @@ import {
   Platform,
   Alert,
   ActivityIndicator,
+
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -58,6 +59,24 @@ export default function FishingDetail() {
 
   const [isDeleting, setIsDeleting] = useState(false);
 
+  useLayoutEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: { display: 'none' }
+    });
+    
+    return () => {
+      navigation.getParent()?.setOptions({
+        tabBarStyle: {
+          height: 65,
+          paddingBottom: 10,
+          paddingTop: 5,
+          backgroundColor: '#fff',
+          borderTopWidth: 1,
+          borderTopColor: '#e0e0e0',
+        }
+      });
+    };
+  }, [navigation]);
  
   const [polowData] = useState<FishingSession>({
     id: 'trip_1', 
