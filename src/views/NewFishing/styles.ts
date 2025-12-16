@@ -418,4 +418,51 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold', 
     fontSize: 16 
   },
+  photoSection: {
+    marginVertical: 15,
+    alignItems: 'center',
+    width: '100%',
+  },
+  previewContainer: {
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  previewImage: {
+    width: 150,
+    height: 150,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    marginBottom: 8,
+  },
+  removePhotoText: {
+    color: '#dc3545', 
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  photoOptionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    gap: 10, 
+  },
+  photoButton: {
+    flex: 1,
+    backgroundColor: '#f0f0f0', 
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  photoButtonText: {
+    color: '#333',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  textArea: {
+    height: 80,
+    textAlignVertical: 'top',
+  },
 });

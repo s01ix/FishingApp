@@ -11,11 +11,13 @@ import {
   Platform,
   TextInput,
   FlatList,
-  ActivityIndicator, 
+  ActivityIndicator,
+  Image, 
 } from 'react-native';
 import { styles } from './styles';
 import { useNavigation, useFocusEffect } from "@react-navigation/native"; 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import * as ImagePicker from 'expo-image-picker'; 
 import { useAuth } from '../../types/AuthContext';
 import { API_URL } from '../../components/config';
 import { SpotsStackParamList } from '../../types/navigation'; 
@@ -35,6 +37,7 @@ interface CaughtFish {
   godzina: string;
   przyneta: string;
   notatki?: string;
+  zdjecie?: string; 
 }
 
 export default function NewFishing() {
@@ -56,6 +59,8 @@ export default function NewFishing() {
   const [tempWeight, setTempWeight] = useState('');
   const [tempLength, setTempLength] = useState('');
   const [tempBait, setTempBait] = useState('');
+  const [tempNotes, setTempNotes] = useState('');
+  const [tempPhoto, setTempPhoto] = useState<string | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -83,9 +88,47 @@ export default function NewFishing() {
     setTempWeight('');
     setTempLength('');
     setTempBait('');
+    setTempNotes('');
+    setTempPhoto(null);
     setModalVisible(true);
   };
 
+  //Wybór zdjęcia z galerii
+  const pickPhoto = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images, 
+      allowsEditing: true, 
+      aspect: [4, 3],   
+      quality: 0.5,  
+      base64: true,  
+    });
+
+    if (!result.canceled && result.assets && result.assets[0].base64) {
+      setTempPhoto(`data:image/jpeg;base64,${result.assets[0].base64}`);
+    }
+  };
+
+  // Zrobienie zdjęcia aparatem
+  const takePhoto = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    
+    if (permissionResult.granted === false) {
+      Alert.alert("Brak zgody", "Musisz zezwolić aplikacji na dostęp do aparatu!");
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.5, 
+      base64: true, 
+    });
+
+    if (!result.canceled && result.assets && result.assets[0].base64) {
+      setTempPhoto(`data:image/jpeg;base64,${result.assets[0].base64}`);
+    }
+  };
+  
   const saveFishFromModal = () => {
     if (!tempSpecies || !tempWeight) {
       Alert.alert("Błąd", "Podaj przynajmniej gatunek i wagę ryby.");
@@ -99,7 +142,8 @@ export default function NewFishing() {
       dlugosc: parseFloat(tempLength.replace(',', '.')) || 0,
       godzina: new Date().toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
       przyneta: tempBait || 'Brak',
-      notatki: ''
+      notatki: tempNotes || '',
+      zdjecie: tempPhoto || undefined,
     };
 
     setCaughtFishes([...caughtFishes, newFish]);
@@ -424,11 +468,12 @@ export default function NewFishing() {
         </View>
       </Modal>
 
-      <Modal visible={isModalVisible} animationType="fade" transparent>
+<Modal visible={isModalVisible} animationType="fade" transparent>
         <View style={styles.centeredModalOverlay}>
           <View style={styles.fishModalContainer}>
             <Text style={styles.fishModalTitle}>Dodaj Rybę</Text>
 
+            {/* --- Gatunki --- */}
             <Text style={styles.inputLabel}>Gatunek *</Text>
             <TextInput 
               style={styles.input} 
@@ -437,6 +482,7 @@ export default function NewFishing() {
               onChangeText={setTempSpecies}
             />
 
+            {/* --- Waga i Długość --- */}
             <View style={styles.inputRow}>
               <View style={{ flex: 1, marginRight: 10 }}>
                 <Text style={styles.inputLabel}>Waga (kg) *</Text>
@@ -460,6 +506,7 @@ export default function NewFishing() {
               </View>
             </View>
 
+            {/* --- Przynęta --- */}
             <Text style={styles.inputLabel}>Przynęta</Text>
             <TextInput 
               style={styles.input} 
@@ -468,6 +515,45 @@ export default function NewFishing() {
               onChangeText={setTempBait}
             />
 
+            {/* --- Notatki --- */}
+            <Text style={styles.inputLabel}>Notatki</Text>
+            <TextInput 
+              style={[styles.input, styles.textArea]} 
+              placeholder="Dodatkowe informacje" 
+              value={tempNotes}
+              onChangeText={setTempNotes}
+              multiline={true} 
+              numberOfLines={3}
+            />
+
+            {/* --- Zdjęcia --- */}
+            <View style={styles.photoSection}>
+              <Text style={[styles.inputLabel, { alignSelf: 'flex-start', marginTop: 10 }]}>Zdjęcie</Text>
+              
+              {tempPhoto ? (
+                <View style={styles.previewContainer}>
+                  <Image 
+                    source={{ uri: tempPhoto }} 
+                    style={styles.previewImage} 
+                  />
+                  <TouchableOpacity onPress={() => setTempPhoto(null)}>
+                    <Text style={styles.removePhotoText}>Usuń zdjęcie 🗑️</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <View style={styles.photoOptionsRow}>
+                  <TouchableOpacity onPress={pickPhoto} style={styles.photoButton}>
+                    <Text style={styles.photoButtonText}>Galeria</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity onPress={takePhoto} style={styles.photoButton}>
+                    <Text style={styles.photoButtonText}>Aparat</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+
+            {/* --- Przyciski Anuluj i Dodaj --- */}
             <View style={styles.modalBtnRow}>
               <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalBtnCancel}>
                 <Text style={styles.btnTextBlack}>Anuluj</Text>
@@ -476,6 +562,7 @@ export default function NewFishing() {
                 <Text style={styles.btnTextWhite}>Dodaj</Text>
               </TouchableOpacity>
             </View>
+
           </View>
         </View>
       </Modal>
