@@ -15,8 +15,11 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { API_URL } from '../../components/config'; 
 import { styles } from './styles'; 
+import * as Location from 'expo-location';
 
 const SPOT_TYPES = ['Jezioro', 'Rzeka', 'Staw', 'Zalew', 'Morze', 'Inne'];
+
+
 
 export default function AddFishingSpot() {
   const navigation = useNavigation();
@@ -29,14 +32,40 @@ export default function AddFishingSpot() {
   const [selectedType, setSelectedType] = useState('Jezioro');
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
   const handleGoBack = () => navigation.goBack();
 
-  const handleGetLocation = () => {
-    console.log("Pobieranie lokalizacji z GPS...");
-    Alert.alert("Info", "Tutaj w przyszłości podepniemy sensor GPS.");
-    // W przyszłości tutaj zrobimy: setLatitude(gps.lat); setLongitude(gps.lon);
-  };
+  const handleGetLocation = async () => {
+    try {
+      setIsLoadingLocation(true);      
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      console.log('Status pozwolenia:', status);
+      
+      if (status !== 'granted') {
+        Alert.alert('Błąd', 'Brak pozwolenia na dostęp do lokalizacji.');
+        return;
+      }
+
+      console.log('Pobieranie obecnej lokalizacji');
+      let location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+      
+      console.log('Lokalizacja:', location.coords);
+      
+      setLatitude(location.coords.latitude.toFixed(6));
+      setLongitude(location.coords.longitude.toFixed(6));
+      
+      Alert.alert('Sukces', 'Pobrano lokalizację GPS!');
+      
+    } catch (error) {
+      console.error('Błąd lokalizacji:', error);
+      Alert.alert('Błąd', 'Nie udało się pobrać lokalizacji: ');
+    } finally {
+      setIsLoadingLocation(false);
+    }
+  }
 
   const handleSave = async () => {
     if (!name || !location || !latitude || !longitude) {
@@ -140,12 +169,19 @@ export default function AddFishingSpot() {
           <Text style={styles.label}>Współrzędne GPS *</Text>
 
           <TouchableOpacity 
-            style={styles.gpsButton} 
+            style={styles.gpsButton}  
             onPress={handleGetLocation}
             activeOpacity={0.7}
+            disabled={isLoadingLocation}
           >
-            <Text style={styles.gpsIcon}>🎯</Text>
-            <Text style={styles.gpsButtonText}>Użyj mojej obecnej lokalizacji</Text>
+            {isLoadingLocation ? (
+              <ActivityIndicator color="#2196F3" size="small" />
+            ) : (
+              <Text style={styles.gpsIcon}>🎯</Text>
+            )}
+            <Text style={styles.gpsButtonText}>
+              {isLoadingLocation ? 'Pobieranie lokalizacji...' : 'Użyj mojej obecnej lokalizacji'}
+            </Text>
           </TouchableOpacity>
 
           <View style={styles.row}>
