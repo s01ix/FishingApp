@@ -21,14 +21,17 @@ import type {
   AuthStackParamList,
   MainTabsParamList,
   HistoryStackParamList,
+  ProfileStackParamList,
 } from './src/types/navigation';
 import NewFishing from './src/views/NewFishing';
 import { SpotsStackParamList } from './src/types/navigation'; // Upewnij się że importujesz ten typ
+import EditProfileScreen from './src/views/EditProfile';
 const SpotsStack = createNativeStackNavigator<SpotsStackParamList>();
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const HistoryStack = createNativeStackNavigator<HistoryStackParamList>();
+const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 
 const Tab = createBottomTabNavigator<MainTabsParamList>();
 
@@ -39,6 +42,15 @@ function HistoryNavigator() {
       <HistoryStack.Screen name="FishingDetail" component={FishingDetailScreen} />
       <HistoryStack.Screen name= "FishDetail" component={FishDetailScreen}/>
     </HistoryStack.Navigator>
+  );
+}
+
+function ProfileNavigator() {
+  return (
+    <ProfileStack.Navigator screenOptions={{ headerShown: false }}>
+      <ProfileStack.Screen name="ProfileScreen" component={ProfileScreen} />
+      <ProfileStack.Screen name="EditProfileScreen" component={EditProfileScreen} />
+    </ProfileStack.Navigator>
   );
 }
 
@@ -164,7 +176,7 @@ function MainTabs() {
 
       <Tab.Screen
         name="ProfileTab"
-        component={ProfileScreen}
+        component={ProfileNavigator}
         options={{ tabBarLabel: 'Profil' }}
         listeners={{
           tabPress: (e) => {

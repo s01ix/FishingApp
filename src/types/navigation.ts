@@ -34,4 +34,5 @@ export type SpotsStackParamList = {
 
 export type ProfileStackParamList = {
   ProfileScreen: undefined;
+  EditProfileScreen: undefined;
 };

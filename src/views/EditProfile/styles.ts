@@ -1,0 +1,93 @@
+import { StyleSheet } from "react-native";
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f7fa",
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    backgroundColor: "#2c5f2d",
+    elevation: 40,
+    shadowColor: "#2c5f2d",
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  backButton: {
+    fontSize: 18,
+    color: "#fff",
+    marginRight: 16,
+    fontWeight: "600",
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#fff",
+  },
+  content: {
+    flex: 1,
+    padding: 20,
+  },
+  formGroup: {
+    marginBottom: 18,
+    backgroundColor: "#fff",
+    padding: 15,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  label: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#2c5f2d",
+    marginBottom: 8,
+  },
+  input: {
+    backgroundColor: "#f5f7fa",
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    color: "#333",
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+  },
+  textArea: {
+    height: 100,
+    textAlignVertical: "top",
+  },
+  saveButton: {
+    backgroundColor: "#2c5f2d",
+    borderRadius: 20,
+    padding: 14,
+    alignItems: "center",
+    marginTop: 10,
+    elevation: 3,
+    shadowColor: "#2c5f2d",
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  saveButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  cancelButton: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 14,
+    alignItems: "center",
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: "#d32f2f",
+  },
+  cancelButtonText: {
+    color: "#d32f2f",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+});

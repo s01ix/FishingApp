@@ -77,8 +77,10 @@ export default function ProfileScreen() {
           <Text style={styles.stat}>Złowione ryby: {s.fishCaught ?? 0}</Text>
           <Text style={styles.stat}>Największa ryba (kg): {s.biggestCatchKg ?? '—'}</Text>
         </View>
-
-        <TouchableOpacity style={styles.button}>
+        
+        <TouchableOpacity style={styles.button} 
+          onPress={() => (navigation as any).navigate('EditProfileScreen')}
+          >
           <Text style={styles.buttonText}>Edytuj profil</Text>
         </TouchableOpacity>
 
