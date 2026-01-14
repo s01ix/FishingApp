@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useState, useEffect } from 'react';
 import {
   Text,
   View,
@@ -7,9 +7,12 @@ import {
   TouchableOpacity,
   SafeAreaView,
   StatusBar,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { styles } from './styles';
-import { useNavigation, useRoute } from '@react-navigation/native'; // ZMIANA: dodaj useRoute
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { API_URL } from '../../components/config'; // ZMIANA: dodaj useRoute
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RouteProp } from '@react-navigation/native'; // ZMIANA: dodaj import RouteProp
 import type { HistoryStackParamList } from '../../types/navigation';
@@ -38,7 +41,11 @@ export default function FishDetail() {
     const navigation = useNavigation<FishDetailNavigationProp>(); 
     const route = useRoute<FishDetailRouteProp>();
     const { fishID } = route.params;
-        useLayoutEffect(() => {
+
+    const [ryba, setRyba] = useState<Fish | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useLayoutEffect(() => {
       navigation.getParent()?.setOptions({
         tabBarStyle: { display: 'none' }
       });
@@ -57,20 +64,61 @@ export default function FishDetail() {
       };
     }, [navigation]);
 
-  const ryba: Fish = {
-    id: '1',
-    zdjecie: 'https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=800',
-    gatunek: 'Karp',
-    nazwa: 'Karpik',
-    waga: 5.2,
-    dlugosc: 65,
-    godzina: '14:35',
-    data: '15.01.2024',
-    miejsce: 'Jezioro Białe, Stanowisko 3',
-    przyneta: 'Kukurydza',
-    notatki: 'Ciężko było złapać, walczył przez 15 minut! Świetne wspomnienie.',
-    connectionId: '#12345',
-  };
+    useEffect(() => {
+      const fetchFishData = async () => {
+        try {
+          setIsLoading(true);
+          // Pobierz wszystkie trips
+          const tripsResponse = await fetch(`${API_URL}/trips`);
+          const trips = await tripsResponse.json();
+          
+          // Znajdź trip który zawiera tę rybę
+          let foundFish: any = null;
+          let foundTrip: any = null;
+          
+          for (const trip of trips) {
+            if (trip.catches && trip.catches.length > 0) {
+              const fish = trip.catches.find((c: any) => c.id === fishID);
+              if (fish) {
+                foundFish = fish;
+                foundTrip = trip;
+                break;
+              }
+            }
+          }
+          
+          if (!foundFish) {
+            throw new Error('Nie znaleziono ryby');
+          }
+          
+          // Przekształć dane do formatu Fish
+          const formattedFish: Fish = {
+            id: foundFish.id,
+            zdjecie: foundFish.zdjecie || 'https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=800',
+            gatunek: foundFish.gatunek,
+            nazwa: foundFish.nazwa,
+            waga: foundFish.waga,
+            dlugosc: foundFish.dlugosc,
+            godzina: foundFish.godzina,
+            data: foundTrip.date,
+            miejsce: foundTrip.spotName,
+            przyneta: foundFish.przyneta,
+            notatki: foundFish.notatki || '',
+            connectionId: foundTrip.id,
+          };
+          
+          setRyba(formattedFish);
+        } catch (error) {
+          console.error('Błąd podczas pobierania danych ryby:', error);
+          Alert.alert('Błąd', 'Nie udało się pobrać danych ryby');
+          navigation.goBack();
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
+      fetchFishData();
+    }, [fishID]);
 
   const handleGoBack = () => {
     console.log('Powrót do listy');
@@ -78,14 +126,28 @@ export default function FishDetail() {
   };
 
   const handleEdit = () => {
+    if (!ryba) return;
     console.log('Edycja ryby:', ryba.id);
     // Tutaj będzie navigation.navigate('EditFish', { fishId: ryba.id })
   };
 
   const handleDelete = () => {
+    if (!ryba) return;
     console.log('Usuwanie ryby:', ryba.id);
     // Tutaj będzie logika usuwania
   };
+
+  if (isLoading || !ryba) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" />
+        <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+          <ActivityIndicator size="large" color="#4A90E2" />
+          <Text style={{ marginTop: 10, color: '#666' }}>Ładowanie danych ryby...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>

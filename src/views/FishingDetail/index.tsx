@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect, useEffect } from "react";
 import {
   Text,
   View,
@@ -11,14 +11,13 @@ import {
   Platform,
   Alert,
   ActivityIndicator,
-
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { styles } from './styles';
-import { API_URL } from '../../components/config'; 
-import type { HistoryStackParamList } from '../../types/navigation'; 
-
+} from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { RouteProp } from "@react-navigation/native";
+import { styles } from "./styles";
+import { API_URL } from "../../components/config";
+import type { HistoryStackParamList } from "../../types/navigation";
 
 interface FishingSpot {
   id: string;
@@ -52,109 +51,132 @@ interface FishingSession {
   notatki?: string;
 }
 
-
 export default function FishingDetail() {
-  type FishingDetailNavigationProp = NativeStackNavigationProp<HistoryStackParamList, 'FishingDetail'>;
+  type FishingDetailNavigationProp = NativeStackNavigationProp<
+    HistoryStackParamList,
+    "FishingDetail"
+  >;
+  type FishingDetailRouteProp = RouteProp<
+    HistoryStackParamList,
+    "FishingDetail"
+  >;
+
   const navigation = useNavigation<FishingDetailNavigationProp>();
+  const route = useRoute<FishingDetailRouteProp>();
+  const { fishingID } = route.params;
 
   const [isDeleting, setIsDeleting] = useState(false);
+  const [polowData, setPolowData] = useState<FishingSession | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useLayoutEffect(() => {
     navigation.getParent()?.setOptions({
-      tabBarStyle: { display: 'none' }
+      tabBarStyle: { display: "none" },
     });
-    
+
     return () => {
       navigation.getParent()?.setOptions({
         tabBarStyle: {
           height: 65,
           paddingBottom: 10,
           paddingTop: 5,
-          backgroundColor: '#fff',
+          backgroundColor: "#fff",
           borderTopWidth: 1,
-          borderTopColor: '#e0e0e0',
-        }
+          borderTopColor: "#e0e0e0",
+        },
       });
     };
   }, [navigation]);
- 
-  const [polowData] = useState<FishingSession>({
-    id: 'trip_1', 
-    data: '15.01.2024',
-    godzinaRozpoczecia: '06:30',
-    godzinaZakonczenia: '14:45',
-    lowisko: {
-      id: '1',
-      nazwa: 'Jezioro Białe',
-      lokalizacja: 'Okuninka, woj. lubelskie',
-      latitude: 51.3032,
-      longitude: 23.1248,
-    },
-    pogoda: 'Słonecznie',
-    temperatura: 18,
-    ryby: [
-      {
-        id: '1',
-        zdjecie: 'https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=400',
-        gatunek: 'Karp',
-        nazwa: 'Karpik',
-        waga: 5.2,
-        dlugosc: 65,
-        godzina: '08:15',
-        przyneta: 'Kukurydza',
-        notatki: 'Ciężko było złapać, walczył przez 15 minut!',
-      },
-      {
-        id: '2',
-        zdjecie: 'https://images.unsplash.com/photo-1520990683880-f48dcc6148de?w=400',
-        gatunek: 'Szczupak',
-        nazwa: 'Szczupaczek',
-        waga: 3.8,
-        dlugosc: 58,
-        godzina: '10:30',
-        przyneta: 'Błystka',
-      },
-    ],
-    notatki: 'Świetny dzień! Woda była czysta, dużo brań. Polecam stanowisko przy pomoście.',
-  });
 
+  useEffect(() => {
+    const fetchTripData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(`${API_URL}/trips/${fishingID}`);
+
+        if (!response.ok) {
+          throw new Error("Nie udało się pobrać danych połowu");
+        }
+
+        const tripData = await response.json();
+
+        // Pobierz dane łowiska
+        const spotResponse = await fetch(
+          `${API_URL}/fishingSpots/${tripData.spotId}`
+        );
+        const spotData = await spotResponse.json();
+
+        // Przekształć dane do formatu FishingSession
+        const formattedData: FishingSession = {
+          id: tripData.id,
+          data: tripData.date,
+          godzinaRozpoczecia: tripData.startTime,
+          godzinaZakonczenia: tripData.endTime,
+          lowisko: {
+            id: spotData.id,
+            nazwa: spotData.nazwa,
+            lokalizacja: spotData.lokalizacja,
+            latitude: spotData.latitude,
+            longitude: spotData.longitude,
+          },
+          ryby: tripData.catches || [],
+          pogoda: tripData.weather,
+          temperatura: tripData.temperature,
+          notatki: tripData.notes,
+        };
+
+        setPolowData(formattedData);
+      } catch (error) {
+        console.error("Błąd podczas pobierania danych:", error);
+        Alert.alert("Błąd", "Nie udało się pobrać danych połowu");
+        navigation.goBack();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTripData();
+  }, [fishingID]);
 
   const handleGoBack = () => {
     navigation.goBack();
   };
 
   const handleEdit = () => {
-    console.log('Edycja połowu:', polowData.id);
+    console.log("Edycja połowu:", polowData?.id);
     Alert.alert("Info", "Funkcja edycji dostępna wkrótce.");
   };
 
   const handleFishPress = (fishId: string) => {
-    console.log('Szczegóły ryby:', fishId);
-    navigation.navigate('FishDetail', { fishID: fishId });
+    console.log("Szczegóły ryby:", fishId);
+    navigation.navigate("FishDetail", { fishID: fishId });
   };
 
-
   const performDelete = async () => {
+    if (!polowData) return;
+
     setIsDeleting(true);
     try {
-      const response = await fetch(`${API_URL}/trips/${polowData.id}`, {
-        method: 'DELETE',
+      const response = await fetch(`${API_URL}/trips/${fishingID}`, {
+        method: "DELETE",
       });
 
       if (!response.ok) {
         if (response.status === 404) {
-             throw new Error('Nie znaleziono takiej wyprawy w bazie danych.');
+          throw new Error("Nie znaleziono takiej wyprawy w bazie danych.");
         }
-        throw new Error('Wystąpił błąd serwera.');
+        throw new Error("Wystąpił błąd serwera.");
       }
 
-      Alert.alert('Sukces', 'Wyprawa została usunięta.', [
-        { text: 'OK', onPress: () => navigation.goBack() }
+      Alert.alert("Sukces", "Wyprawa została usunięta.", [
+        { text: "OK", onPress: () => navigation.goBack() },
       ]);
-
     } catch (error: any) {
       console.error(error);
-      Alert.alert('Błąd', error.message || 'Nie udało się połączyć z serwerem.');
+      Alert.alert(
+        "Błąd",
+        error.message || "Nie udało się połączyć z serwerem."
+      );
     } finally {
       setIsDeleting(false);
     }
@@ -162,23 +184,27 @@ export default function FishingDetail() {
 
   const handleDelete = () => {
     Alert.alert(
-      'Usunąć połów?',
-      'Czy na pewno chcesz usunąć ten połów? Operacja jest nieodwracalna.',
+      "Usunąć połów?",
+      "Czy na pewno chcesz usunąć ten połów? Operacja jest nieodwracalna.",
       [
-        { text: 'Anuluj', style: 'cancel' },
+        { text: "Anuluj", style: "cancel" },
         {
-          text: 'Usuń',
-          style: 'destructive',
+          text: "Usuń",
+          style: "destructive",
           onPress: performDelete,
         },
       ]
     );
   };
 
-  const openMaps = (latitude: number, longitude: number, label: string): void => {
+  const openMaps = (
+    latitude: number,
+    longitude: number,
+    label: string
+  ): void => {
     const scheme = Platform.select({
-      ios: 'maps://0,0?q=',
-      android: 'geo:0,0?q=',
+      ios: "maps://0,0?q=",
+      android: "geo:0,0?q=",
     });
     const latLng = `${latitude},${longitude}`;
     const url = Platform.select({
@@ -195,34 +221,58 @@ export default function FishingDetail() {
   };
 
   const getTotalWeight = (): number => {
+    if (!polowData) return 0;
     return polowData.ryby.reduce((sum, fish) => sum + fish.waga, 0);
   };
 
   const getBiggestFish = (): CaughtFish | null => {
-    if (polowData.ryby.length === 0) return null;
-    return polowData.ryby.reduce((max, fish) => (fish.waga > max.waga ? fish : max));
+    if (!polowData || polowData.ryby.length === 0) return null;
+    return polowData.ryby.reduce((max, fish) =>
+      fish.waga > max.waga ? fish : max
+    );
   };
 
   const getAverageWeight = (): number => {
-    if (polowData.ryby.length === 0) return 0;
+    if (!polowData || polowData.ryby.length === 0) return 0;
     return getTotalWeight() / polowData.ryby.length;
   };
 
   const getDuration = (): string => {
-    if (!polowData.godzinaZakonczenia) return 'W trakcie...';
-    
-    const [startH, startM] = polowData.godzinaRozpoczecia.split(':').map(Number);
-    const [endH, endM] = polowData.godzinaZakonczenia.split(':').map(Number);
-    
+    if (!polowData || !polowData.godzinaZakonczenia) return "W trakcie...";
+
+    const [startH, startM] = polowData.godzinaRozpoczecia
+      .split(":")
+      .map(Number);
+    const [endH, endM] = polowData.godzinaZakonczenia.split(":").map(Number);
+
     const startMinutes = startH * 60 + startM;
     const endMinutes = endH * 60 + endM;
     const diffMinutes = endMinutes - startMinutes;
-    
+
     const hours = Math.floor(diffMinutes / 60);
     const minutes = diffMinutes % 60;
-    
+
     return `${hours}h ${minutes}min`;
   };
+
+  if (isLoading || !polowData) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" />
+        <View
+          style={[
+            styles.container,
+            { justifyContent: "center", alignItems: "center" },
+          ]}
+        >
+          <ActivityIndicator size="large" color="#4A90E2" />
+          <Text style={{ marginTop: 10, color: "#666" }}>
+            Ładowanie danych...
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const biggestFish = getBiggestFish();
 
@@ -238,14 +288,17 @@ export default function FishingDetail() {
         <View style={styles.placeholder} />
       </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.mainInfo}>
           <Text style={styles.date}>{polowData.data}</Text>
           <View style={styles.timeRow}>
             <Text style={styles.time}>
               🕐 {polowData.godzinaRozpoczecia}
-              {polowData.godzinaZakonczenia && ` - ${polowData.godzinaZakonczenia}`}
+              {polowData.godzinaZakonczenia &&
+                ` - ${polowData.godzinaZakonczenia}`}
             </Text>
             <View style={styles.durationBadge}>
               <Text style={styles.durationText}>{getDuration()}</Text>
@@ -290,7 +343,9 @@ export default function FishingDetail() {
               {polowData.temperatura && (
                 <View style={styles.conditionItem}>
                   <Text style={styles.conditionIcon}>🌡️</Text>
-                  <Text style={styles.conditionText}>{polowData.temperatura}°C</Text>
+                  <Text style={styles.conditionText}>
+                    {polowData.temperatura}°C
+                  </Text>
                 </View>
               )}
             </View>
@@ -307,18 +362,22 @@ export default function FishingDetail() {
             </View>
             <View style={styles.statCard}>
               <Text style={styles.statIcon}>⚖️</Text>
-              <Text style={styles.statValue}>{getTotalWeight().toFixed(2)} kg</Text>
+              <Text style={styles.statValue}>
+                {getTotalWeight().toFixed(2)} kg
+              </Text>
               <Text style={styles.statLabel}>Łączna waga</Text>
             </View>
             <View style={styles.statCard}>
               <Text style={styles.statIcon}>📊</Text>
-              <Text style={styles.statValue}>{getAverageWeight().toFixed(2)} kg</Text>
+              <Text style={styles.statValue}>
+                {getAverageWeight().toFixed(2)} kg
+              </Text>
               <Text style={styles.statLabel}>Średnia waga</Text>
             </View>
             <View style={styles.statCard}>
               <Text style={styles.statIcon}>🏆</Text>
               <Text style={styles.statValue}>
-                {biggestFish ? `${biggestFish.waga} kg` : '-'}
+                {biggestFish ? `${biggestFish.waga} kg` : "-"}
               </Text>
               <Text style={styles.statLabel}>Największa</Text>
             </View>
@@ -337,7 +396,10 @@ export default function FishingDetail() {
               activeOpacity={0.7}
             >
               {fish.zdjecie && (
-                <Image source={{ uri: fish.zdjecie }} style={styles.fishImage} />
+                <Image
+                  source={{ uri: fish.zdjecie }}
+                  style={styles.fishImage}
+                />
               )}
               <View style={styles.fishInfo}>
                 <View style={styles.fishHeader}>
@@ -371,8 +433,8 @@ export default function FishingDetail() {
             <Text style={styles.editButtonText}>✏️ Edytuj</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={[styles.deleteButton, isDeleting && { opacity: 0.6 }]} 
+          <TouchableOpacity
+            style={[styles.deleteButton, isDeleting && { opacity: 0.6 }]}
             onPress={handleDelete}
             disabled={isDeleting}
           >
@@ -383,7 +445,6 @@ export default function FishingDetail() {
             )}
           </TouchableOpacity>
         </View>
-
       </ScrollView>
     </SafeAreaView>
   );
