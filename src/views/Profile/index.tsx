@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   StatusBar,
   Alert, 
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useAuth } from '../../types/AuthContext';
 import { styles } from './styles';
 
@@ -30,8 +30,21 @@ type UserProfile = {
 const localAvatar = require("../../../assets/avatar.png");
 
 export default function ProfileScreen() {
-  const { user, logout } = useAuth();
+  const { user, logout, refreshUserData } = useAuth();
   const navigation = useNavigation();
+
+  useFocusEffect(
+    useCallback(() => {
+      const loadData = async () => {
+        try {
+          await refreshUserData?.();
+        } catch (error) {
+          console.error('Błąd odświeżania profilu:', error);
+        }
+      };
+      loadData();
+    }, [refreshUserData])
+  );
 
   const s = (user && (user.stats as any)) ?? { trips: 0, fishCaught: 0 };
 

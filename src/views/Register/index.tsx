@@ -43,6 +43,11 @@ export default function RegisterScreen() {
     try {
       const checkUrl = `${API_URL}/users?email=${encodeURIComponent(email)}`;
       const checkResponse = await fetch(checkUrl);
+      
+      if (!checkResponse.ok) {
+        throw new Error('Błąd sprawdzania użytkownika');
+      }
+      
       const existingUsers = await checkResponse.json();
 
       if (existingUsers.length > 0) {

@@ -12,7 +12,7 @@ import FishingDetailScreen from './src/views/FishingDetail';
 import SpotsScreen from './src/views/FishingSpots';
 import ProfileScreen from './src/views/Profile';
 import FishDetailScreen from './src/views/FishDetail';
-import AddFishingScreen from './src/views/NewFishing';
+import AddFishingScreen from './src/views/NewFishing'; 
 import AddFishingSpot from './src/views/AddFishingSpot/AddFishingSpot';
 import RegisterScreen from './src/views/Register';
 

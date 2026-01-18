@@ -42,7 +42,7 @@ interface CaughtFish {
 }
 
 export default function NewFishing() {
-  const { user } = useAuth();
+  const { user, refreshUserData } = useAuth();
 
   const navigation = useNavigation<any>();
 
@@ -69,12 +69,17 @@ export default function NewFishing() {
         setIsLoadingSpots(true);
         try {
           const response = await fetch(`${API_URL}/fishingSpots`);
-          if (response.ok) {
-            const data = await response.json();
-            setSpots(data);
+          
+          if (!response.ok) {
+            throw new Error('Błąd pobierania łowisk');
           }
+          
+          const data = await response.json();
+          setSpots(data);
         } catch (error) {
-          console.error("Błąd pobierania łowisk:", error);
+          console.error('Błąd pobierania łowisk:', error);
+          Alert.alert('Błąd', 'Nie udało się pobrać listy łowisk.');
+          setSpots([]);
         } finally {
           setIsLoadingSpots(false);
         }
@@ -224,7 +229,7 @@ export default function NewFishing() {
       });
 
       if (!tripResponse.ok) {
-        throw new Error("Serwer zwrócił błąd przy zapisywaniu połowu");
+        throw new Error('Błąd zapisywania połowu');
       }
 
       const savedTrip = await tripResponse.json();
@@ -246,8 +251,11 @@ export default function NewFishing() {
       });
 
       if (!updateResponse.ok) {
-        throw new Error("Serwer zwrócił błąd przy aktualizacji ryb");
+        throw new Error('Błąd aktualizacji danych');
       }
+
+      // Odśwież dane użytkownika
+      await refreshUserData?.();
 
       Alert.alert("Sukces", "Połów został zapisany w bazie!", [
         {
@@ -256,8 +264,8 @@ export default function NewFishing() {
         },
       ]);
     } catch (error) {
-      console.error(error);
-      Alert.alert("Błąd", "Nie udało się połączyć z serwerem json-server.");
+      console.error('Błąd zapisywania połowu:', error);
+      Alert.alert("Błąd", "Nie udało się zapisać połowu. Sprawdź połączenie internetowe.");
     }
   };
 

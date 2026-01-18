@@ -23,16 +23,26 @@ export default function EditProfileScreen() {
   const [bio, setBio] = useState(user?.bio ?? '');
 
   const handleSave = () => {
-    if (updateUser) {
-      updateUser({
-        ...user,
-        firstName,
-        lastName,
-        favoriteFish,
-        bio,
-      });
-      Alert.alert("Sukces", "Profil został zaktualizowany");
-      navigation.goBack();
+    if (!firstName.trim() || !lastName.trim()) {
+      Alert.alert('Błąd', 'Imię i nazwisko są wymagane.');
+      return;
+    }
+
+    try {
+      if (updateUser) {
+        updateUser({
+          ...user,
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          favoriteFish: favoriteFish.trim(),
+          bio: bio.trim(),
+        });
+        Alert.alert("Sukces", "Profil został zaktualizowany");
+        navigation.goBack();
+      }
+    } catch (error) {
+      console.error('Błąd aktualizacji profilu:', error);
+      Alert.alert('Błąd', 'Nie udało się zaktualizować profilu.');
     }
   };
 

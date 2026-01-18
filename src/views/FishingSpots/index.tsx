@@ -63,8 +63,9 @@ const navigation = useNavigation<NativeStackNavigationProp<SpotsStackParamList>>
 
       setSpots(spotsWithStats);
     } catch (error) {
-      console.error(error);
-      Alert.alert("Błąd", "Nie udało się pobrać listy łowisk.");
+      console.error('Błąd pobierania łowisk:', error);
+      Alert.alert('Błąd', 'Nie udało się pobrać listy łowisk. Sprawdź połączenie internetowe.');
+      setSpots([]);
     } finally {
       setLoading(false);
     }

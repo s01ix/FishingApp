@@ -18,6 +18,11 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Błąd', 'Wypełnij wszystkie pola.');
+      return;
+    }
+
     const url = `${API_URL}/users?email=${encodeURIComponent(email)}&_embed=trips`;
 
     try {

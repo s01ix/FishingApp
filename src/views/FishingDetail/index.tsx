@@ -104,6 +104,11 @@ export default function FishingDetail() {
         const spotResponse = await fetch(
           `${API_URL}/fishingSpots/${tripData.spotId}`
         );
+        
+        if (!spotResponse.ok) {
+          throw new Error('Nie udało się pobrać danych łowiska');
+        }
+        
         const spotData = await spotResponse.json();
 
         // Przekształć dane do formatu FishingSession
@@ -128,7 +133,7 @@ export default function FishingDetail() {
         setPolowData(formattedData);
       } catch (error) {
         console.error("Błąd podczas pobierania danych:", error);
-        Alert.alert("Błąd", "Nie udało się pobrać danych połowu");
+        Alert.alert('Błąd', 'Nie udało się pobrać danych połowu. Sprawdź połączenie internetowe.');
         navigation.goBack();
       } finally {
         setIsLoading(false);
@@ -163,19 +168,19 @@ export default function FishingDetail() {
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error("Nie znaleziono takiej wyprawy w bazie danych.");
+          throw new Error('Nie znaleziono takiej wyprawy w bazie danych.');
         }
-        throw new Error("Wystąpił błąd serwera.");
+        throw new Error('Błąd serwera przy usuwaniu wyprawy.');
       }
 
       Alert.alert("Sukces", "Wyprawa została usunięta.", [
         { text: "OK", onPress: () => navigation.goBack() },
       ]);
     } catch (error: any) {
-      console.error(error);
+      console.error('Błąd usuwania wyprawy:', error);
       Alert.alert(
-        "Błąd",
-        error.message || "Nie udało się połączyć z serwerem."
+        'Błąd',
+        error.message || 'Nie udało się usunąć wyprawy. Sprawdź połączenie internetowe.'
       );
     } finally {
       setIsDeleting(false);

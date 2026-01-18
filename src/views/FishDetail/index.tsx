@@ -70,6 +70,11 @@ export default function FishDetail() {
           setIsLoading(true);
           // Pobierz wszystkie trips
           const tripsResponse = await fetch(`${API_URL}/trips`);
+          
+          if (!tripsResponse.ok) {
+            throw new Error('Błąd pobierania danych');
+          }
+          
           const trips = await tripsResponse.json();
           
           // Znajdź trip który zawiera tę rybę
@@ -110,7 +115,7 @@ export default function FishDetail() {
           setRyba(formattedFish);
         } catch (error) {
           console.error('Błąd podczas pobierania danych ryby:', error);
-          Alert.alert('Błąd', 'Nie udało się pobrać danych ryby');
+          Alert.alert('Błąd', 'Nie udało się pobrać danych ryby. Sprawdź połączenie internetowe.');
           navigation.goBack();
         } finally {
           setIsLoading(false);

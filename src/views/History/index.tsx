@@ -46,6 +46,11 @@ export default function History() {
 
     try {
       const response = await fetch(`${API_URL}/trips?userId=${user.id}`);
+      
+      if (!response.ok) {
+        throw new Error('Błąd pobierania danych');
+      }
+      
       const rawData = await response.json();
       const reversedData = rawData.reverse();
 
@@ -77,6 +82,7 @@ export default function History() {
       setFishingHistory(processedData);
     } catch (error) {
       console.error('Błąd podczas pobierania historii połowów:', error);
+      setFishingHistory([]);
     }
 
   };
