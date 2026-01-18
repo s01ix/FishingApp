@@ -100,7 +100,6 @@ export default function FishingDetail() {
 
         const tripData = await response.json();
 
-        // Pobierz dane łowiska
         const spotResponse = await fetch(
           `${API_URL}/fishingSpots/${tripData.spotId}`
         );
@@ -111,7 +110,6 @@ export default function FishingDetail() {
         
         const spotData = await spotResponse.json();
 
-        // Przekształć dane do formatu FishingSession
         const formattedData: FishingSession = {
           id: tripData.id,
           data: tripData.date,
@@ -145,11 +143,6 @@ export default function FishingDetail() {
 
   const handleGoBack = () => {
     navigation.goBack();
-  };
-
-  const handleEdit = () => {
-    console.log("Edycja połowu:", polowData?.id);
-    Alert.alert("Info", "Funkcja edycji dostępna wkrótce.");
   };
 
   const handleFishPress = (fishId: string) => {
@@ -434,10 +427,6 @@ export default function FishingDetail() {
         )}
 
         <View style={styles.actionsContainer}>
-          <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-            <Text style={styles.editButtonText}>✏️ Edytuj</Text>
-          </TouchableOpacity>
-
           <TouchableOpacity
             style={[styles.deleteButton, isDeleting && { opacity: 0.6 }]}
             onPress={handleDelete}

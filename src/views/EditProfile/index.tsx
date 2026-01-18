@@ -22,7 +22,7 @@ export default function EditProfileScreen() {
   const [favoriteFish, setFavoriteFish] = useState(user?.favoriteFish ?? '');
   const [bio, setBio] = useState(user?.bio ?? '');
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!firstName.trim() || !lastName.trim()) {
       Alert.alert('Błąd', 'Imię i nazwisko są wymagane.');
       return;
@@ -30,7 +30,7 @@ export default function EditProfileScreen() {
 
     try {
       if (updateUser) {
-        updateUser({
+        await updateUser({
           ...user,
           firstName: firstName.trim(),
           lastName: lastName.trim(),

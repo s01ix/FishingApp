@@ -19,8 +19,6 @@ import * as Location from 'expo-location';
 
 const SPOT_TYPES = ['Jezioro', 'Rzeka', 'Staw', 'Zalew', 'Morze', 'Inne'];
 
-
-
 export default function AddFishingSpot() {
   const navigation = useNavigation();
 

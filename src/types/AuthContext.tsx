@@ -36,8 +36,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoggedIn(false);
   };
 
-  const updateUser = (updatedUser: User) => {
-    setUser(updatedUser);
+  const updateUser = async (updatedUser: User) => {
+    try {
+      if (updatedUser.id) {
+        const response = await fetch(`${API_URL}/users/${updatedUser.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedUser),
+        });
+
+        if (!response.ok) {
+          throw new Error('Błąd aktualizacji użytkownika w bazie danych');
+        }
+      }
+      setUser(updatedUser);
+    } catch (error) {
+      console.error('Błąd podczas aktualizacji użytkownika:', error);
+      throw error;
+    }
   };
 
   const refreshUserData = async () => {
@@ -49,13 +67,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!response.ok) {
         throw new Error('Błąd pobierania danych użytkownika');
       }
-      
       const rawUser = await response.json();
       const updatedUser = calculateUserStats(rawUser);
       setUser(updatedUser);
     } catch (error) {
       console.error('Błąd podczas odświeżania danych użytkownika:', error);
-      // Ciche niepowodzenie - użytkownik pozostaje zalogowany z obecnymi danymi
     }
   };
 

@@ -12,25 +12,24 @@ import {
 } from 'react-native';
 import { styles } from './styles';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { API_URL } from '../../components/config'; // ZMIANA: dodaj useRoute
+import { API_URL } from '../../components/config'; 
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RouteProp } from '@react-navigation/native'; // ZMIANA: dodaj import RouteProp
+import type { RouteProp } from '@react-navigation/native'; 
 import type { HistoryStackParamList } from '../../types/navigation';
 
-// Typ dla danych ryby
 export interface Fish {
   id: string;
   zdjecie: string;
   gatunek: string;
   nazwa: string;
-  waga: number; // w kg
-  dlugosc: number; // w cm
+  waga: number; 
+  dlugosc: number;
   godzina: string;
   data: string;
   miejsce: string;
-  przyneta: string; // na co została złapana (np. kukurydza, robak, itp.)
-  notatki: string | null; // opcjonalne notatki użytkownika
-  connectionId?: string; // ID połowu
+  przyneta: string;
+  notatki: string | null; 
+  connectionId?: string; 
 }
 
 export default function FishDetail() {
@@ -68,7 +67,6 @@ export default function FishDetail() {
       const fetchFishData = async () => {
         try {
           setIsLoading(true);
-          // Pobierz wszystkie trips
           const tripsResponse = await fetch(`${API_URL}/trips`);
           
           if (!tripsResponse.ok) {
@@ -77,7 +75,6 @@ export default function FishDetail() {
           
           const trips = await tripsResponse.json();
           
-          // Znajdź trip który zawiera tę rybę
           let foundFish: any = null;
           let foundTrip: any = null;
           
@@ -96,7 +93,6 @@ export default function FishDetail() {
             throw new Error('Nie znaleziono ryby');
           }
           
-          // Przekształć dane do formatu Fish
           const formattedFish: Fish = {
             id: foundFish.id,
             zdjecie: foundFish.zdjecie || 'https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=800',
@@ -128,18 +124,6 @@ export default function FishDetail() {
   const handleGoBack = () => {
     console.log('Powrót do listy');
     navigation.goBack()
-  };
-
-  const handleEdit = () => {
-    if (!ryba) return;
-    console.log('Edycja ryby:', ryba.id);
-    // Tutaj będzie navigation.navigate('EditFish', { fishId: ryba.id })
-  };
-
-  const handleDelete = () => {
-    if (!ryba) return;
-    console.log('Usuwanie ryby:', ryba.id);
-    // Tutaj będzie logika usuwania
   };
 
   if (isLoading || !ryba) {
@@ -258,17 +242,6 @@ export default function FishDetail() {
             </View>
           </View>
         )}
-
-        {/* Akcje */}
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-            <Text style={styles.editButtonText}>✏️ Edytuj</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-            <Text style={styles.deleteButtonText}>🗑️ Usuń</Text>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
     </SafeAreaView>
   );
